@@ -11,8 +11,8 @@ function Enemy(sprite, posX, posY, speed, game){
   game.physics.enable(this, Phaser.Physics.ARCADE, this);
   this.standingPos = this.posX;
   this.body.velocity.x = -speed;
-  this.body.gravity.y = 10;
-  this.scale.setTo(0.5,0.5);
+  this.body.gravity.y = 30;
+  this.scale.setTo(0.25,0.25);
 }
   Enemy.prototype = Object.create(Phaser.Sprite.prototype);
 	Enemy.prototype.constructor = Enemy;
@@ -85,8 +85,8 @@ var PlayScene = {
       this.enemies = this.game.add.group();
       this.enemies.enableBody = true;
 
-      for(var i = 0; i < 2; i++){
-        var enemy = new Enemy('enemy', 130 + 30*i, 250 - 20 * i, 150, this);
+      for(var i = 0; i < 3; i++){
+        var enemy = new Enemy('enemy', 10, 10, 50, this);
         this.enemies.add(enemy);
       }
   },
@@ -95,7 +95,9 @@ var PlayScene = {
     update: function () {
         var moveDirection = new Phaser.Point(0, 0);
         var collisionWithTilemap = this.game.physics.arcade.collide(this._rush, this.groundLayer);
+        var enemyWithTilemap = this.game.physics.arcade.collide(this.enemies, this.groundLayer);
         var movement = this.GetMovement();
+        var enemyCollision = this.game.physics.arcade.collide(this._rush, this.enemies);
         //transitions
         switch(this._playerState)
         {
