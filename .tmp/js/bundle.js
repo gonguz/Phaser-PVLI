@@ -84,6 +84,7 @@ var PreloaderScene = {
 
       this.game.load.image('tiles', 'images/Sprites2.png');
       this.game.load.image('tiles1', 'images/52088.png');
+      this.game.load.image('enemy', 'images/enemy.png');
       this.game.load.tilemap('tilemap', 'images/map.json', null, Phaser.Tilemap.TILED_JSON);
       this.game.load.atlasJSONHash('rush_idle01', 'images/rush_spritesheet.png',
       'images/rush_spritesheet.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
@@ -178,9 +179,36 @@ module.exports = MenuScene;
 var PlayerState = {'JUMP':0, 'RUN':1, 'FALLING':2, 'STOP':3}
 var Direction = {'LEFT':0, 'RIGHT':1, 'NONE':3}
 
+
+function Enemy(sprite, posX, posY, speed, game){
+  Phaser.Sprite.call(this, game, posX, posY, 'enemy');
+  game.physics.enable(this, Phaser.Physics.ARCADE, this);
+  this.standingPos = this.posX;
+  this.body.velocity.x = -speed;
+  this.body.gravity.y = 10;
+  this.scale.setTo(0.5,0.5);
+}
+  Enemy.prototype = Object.create(Phaser.Sprite.prototype);
+	Enemy.prototype.constructor = Enemy;
+
+
+  Enemy.prototype.move = function(ranMin, ranMax){
+    if(this.posX === this.standingPos - ranMin){ //&& this.x < this.initialPos + max)
+        this.body.velocity.posX = this.speed;
+        if(this.scale.posX > 0)
+            this.scale.posX *= -1;
+    }
+    else if(this.posX === this.standingPos + ranMax){
+        this.body.velocity.posX = -this.speed;
+        if(this.scale.posX < 0)
+            this.scale.posX *= -1;
+    }
+  }
+
 //Scena de juego.
 var PlayScene = {
     _rush: {}, //player
+    enemies: {}, //enemies group;
     _speed: 300, //velocidad del player
     _jumpSpeed: 600, //velocidad de salto
     _jumpHight: 150, //altura máxima del salto.
@@ -227,6 +255,14 @@ var PlayScene = {
       this._rush.animations.add('jump',
                      Phaser.Animation.generateFrameNames('rush_jump',2,2,'',2),0,false);
       this.configure();
+
+      this.enemies = this.game.add.group();
+      this.enemies.enableBody = true;
+
+      for(var i = 0; i < 2; i++){
+        var enemy = new Enemy('enemy', 130 + 30*i, 250 - 20 * i, 150, this);
+        this.enemies.add(enemy);
+      }
   },
 
     //IS called one per frame.
@@ -304,6 +340,10 @@ var PlayScene = {
         //movement
         this.movement(moveDirection,5,
                       this.backgroundLayer.layer.widthInPixels*this.backgroundLayer.scale.x - 10);
+
+                      this.enemies.forEach(function (aux){
+                          aux.move(1, 3);
+                      });
         this.checkPlayerFell();
     },
 
@@ -364,6 +404,13 @@ var PlayScene = {
         if((this._rush.x < xMin && point.x < 0)|| (this._rush.x > xMax && point.x > 0))
             this._rush.body.velocity.x = 0;
 
+    },
+
+    aleatorio: function(inferior,superior){
+   	  var numPosibilidades = superior - inferior;
+   	  var aleat = Math.random() * numPosibilidades;
+   	  aleat = Math.round(aleat);
+   	  return parseInt(inferior) + aleat;
     },
 
     //TODO 9 destruir los recursos tilemap, tiles y logo.
