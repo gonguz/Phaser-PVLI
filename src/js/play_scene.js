@@ -7,12 +7,13 @@ var Direction = {'LEFT':0, 'RIGHT':1, 'NONE':3}
 
 
 function Enemy(sprite, posX, posY, speed, game){
-  Phaser.Sprite.call(this, game, posX, posY, 'enemy');
+  Phaser.Sprite.call(this, game, posX, posY, sprite);
+  //Phaser.Sprite.call(this, game, posX, posY, 'enemyB');
   game.physics.enable(this, Phaser.Physics.ARCADE, this);
   this.standingPos = this.posX;
   this.body.velocity.x = -speed;
   this.body.gravity.y = 30;
-  this.scale.setTo(0.25,0.25);
+  this.scale.setTo(0.25,0.20);
 }
   Enemy.prototype = Object.create(Phaser.Sprite.prototype);
 	Enemy.prototype.constructor = Enemy;
@@ -60,7 +61,7 @@ var PlayScene = {
       //plano de muerte
       this.death = this.map.createLayer('Death');
       this.teleport = this.map.createLayer('Teleport');
-      this._rush = this.game.add.sprite(80,112, 'rush_idle01');
+      this._rush = this.game.add.sprite(100,3000, 'rush_idle01');
       //Colisiones con el plano de muerte y con el plano de muerte y con suelo.
       this.map.setCollisionBetween(1, 5000, true, 'Death');
       this.map.setCollisionBetween(1, 5000, true, 'GroundLayer');
@@ -85,10 +86,31 @@ var PlayScene = {
       this.enemies = this.game.add.group();
       this.enemies.enableBody = true;
 
-      for(var i = 0; i < 3; i++){
+      /*for(var i = 0; i < 3; i++){
         var enemy = new Enemy('enemy', 10, 10, 50, this);
         this.enemies.add(enemy);
-      }
+      }*/
+
+      var enemy1 = new Enemy('enemy', 850, 3180, 0, this);
+      this.enemies.add(enemy1);
+
+      var enemy2 = new Enemy('enemy', 2500, 3450, 0, this);
+      this.enemies.add(enemy2);
+
+      var enemy3 = new Enemy('enemy', 4900, 3300, 0, this);
+      this.enemies.add(enemy3);
+
+      var enemy4 = new Enemy('enemy', 3800, 2500, 0, this);
+      this.enemies.add(enemy4);
+
+      var enemy5 = new Enemy('enemy', 5100, 2500, 0, this);
+      this.enemies.add(enemy5);
+
+      var enemy6 = new Enemy('enemyB', 5000, 1350, 0, this);
+      this.enemies.add(enemy6);
+
+      var enemy7 = new Enemy('enemyB', 900, 1400, 0, this);
+      this.enemies.add(enemy7);
   },
 
     //IS called one per frame.
@@ -214,7 +236,7 @@ var PlayScene = {
     //configure the scene
     configure: function(){
         //Start the Arcade Physics systems
-        this.game.world.setBounds(0, 0, 2400, 160);
+        this.game.world.setBounds(0, 0, 8000, 6000);
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         this.game.stage.backgroundColor = '#a9f0ff';
         this.game.physics.arcade.enable(this._rush);
