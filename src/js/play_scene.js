@@ -36,6 +36,12 @@ function Enemy(sprite, posX, posY, speed, game){
 var PlayScene = {
     _rush: {}, //player
     enemies: {}, //enemies group;
+    keyPause: {},
+    pauseBackground: {},
+    pauseText: {},
+    buttonMenu: {},
+    buttonResume:{},
+    pauseIcon:{},
     _speed: 300, //velocidad del player
     _jumpSpeed: 600, //velocidad de salto
     _jumpHight: 150, //altura máxima del salto.
@@ -92,7 +98,7 @@ var PlayScene = {
         this.enemies.add(enemy);
       }*/
 
-      var enemy1 = new Enemy('enemy', 850, 3180, 0, this);
+      var enemy1 = new Enemy('enemy', 850, 3180, 50, this);
       this.enemies.add(enemy1);
 
       var enemy2 = new Enemy('enemy', 2500, 3450, 0, this);
@@ -121,6 +127,14 @@ var PlayScene = {
         var enemyWithTilemap = this.game.physics.arcade.collide(this.enemies, this.groundLayer);
         var movement = this.GetMovement();
         var enemyCollision = this.game.physics.arcade.collide(this._rush, this.enemies);
+
+        if (this.game.input.keyboard.isDown(Phaser.Keyboard.P)){
+            game.paused = true;
+            this.pausedMenu();
+        }
+
+        this.keyPause = this.game.input.keyboard.addKey(Phaser.Keyboard.P);
+        this.keyPause.onDown.add(this.pausedMenu, this);
         //transitions
         switch(this._playerState)
         {
@@ -198,6 +212,53 @@ var PlayScene = {
         this.checkPlayerFell();
     },
 
+    pausedMenu: function(){
+
+      this.game.world.setBounds(0,0,800,600);
+
+      this.pauseBackground = this.game.add.sprite(this.game.world.centerX,
+                                      this.game.world.centerY,
+                                      'pauseBackground');
+      this.pauseBackground.anchor.setTo(0.5, 0.6);
+
+      this.pauseText = this.game.add.sprite(this.game.world.centerX / 18, this.game.world.centerY/5, 'pauseText');
+
+      this.buttonMenu = this.game.add.button(this.game.world.centerX * 1.4,
+                                             this.game.world.centerY * 1.6,
+                                             'botonMenu',
+                                             this.returnToMenu,
+                                             this, 2, 1, 0);
+
+      this.buttonResume = this.game.add.button(this.game.world.centerX * 0.2,
+                                             this.game.world.centerY * 1.6,
+                                             'botonContinuar',
+                                             this.actionOnClickResume,
+                                             this, 2, 1, 0);
+
+      this.buttonResume.fixedToCamera = true;
+
+      this.pauseIcon = this.game.add.sprite(this.game.world.centerX * 0.85,
+                                             this.game.world.centerY * 1.35, 'pauseIcon');
+      this.pauseIcon.fixedToCamera = true;
+
+      this.game.physics.arcade.isPaused = (this.game.physics.arcade.isPaused) ? false : true;
+    },
+
+    actionOnClickResume: function(){
+        //this.game.world.setBounds(0,0,800,600);
+        this.pauseBackground.visible = false;
+        this.pauseText.visible = false;
+        this.buttonMenu.visible = false;
+        this.buttonResume.visible = false;
+        this.pauseIcon.visible = false;
+        this.game.physics.arcade.isPaused = (this.game.physics.arcade.isPaused) ? false : true;
+
+    },
+
+    returnToMenu: function(){
+      this.game.state.start('menu');
+    },
+
 
     canJump: function(collisionWithTilemap){
         return this.isStanding() && collisionWithTilemap || this._jamping;
@@ -246,6 +307,8 @@ var PlayScene = {
         this._rush.body.gravity.y = 20000;
         this._rush.body.gravity.x = 0;
         this._rush.body.velocity.x = 0;
+        this.game.camera.posX = this._rush.posX;
+        this.game.camera.posY = this._rush.posY;
         this.game.camera.follow(this._rush);
     },
     //move the player

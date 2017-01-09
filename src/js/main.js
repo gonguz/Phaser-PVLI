@@ -22,6 +22,10 @@ var BootScene = {
     this.game.load.image('gameOverImage', 'images/gameOverImage.png');
     this.game.load.image('botonRestart', 'images/botonRestart.png');
     this.game.load.image('botonMenu', 'images/botonMenu.png');
+    this.game.load.image('botonContinuar', 'images/botonContinuar.png');
+    this.game.load.image('pauseBackground', 'images/pauseBackground.jpg');
+    this.game.load.image('pauseText', 'images/pauseText.png');
+    this.game.load.image('pauseIcon', 'images/pauseIcon.png');
   },
 
   create: function () {
