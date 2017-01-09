@@ -32,11 +32,22 @@ function Enemy(sprite, posX, posY, speed, game){
     }
   }
 
+function Trigger(sprite, posX, posY, game){
+  Phaser.Sprite.call(this, game, posX, posY, sprite);
+  game.physics.enable(this, Phaser.Physics.ARCADE, this);
+}
+  Trigger.prototype = Object.create(Phaser.Sprite.prototype);
+  Trigger.prototype.constructor = Trigger;
+
 //Scena de juego.
 var PlayScene = {
     _rush: {}, //player
     enemies: {}, //enemies group;
+    triggers: {},
     keyPause: {},
+    t1: {},
+    t2: {},
+    t3: {},
     pauseBackground: {},
     pauseText: {},
     buttonMenu: {},
@@ -48,12 +59,12 @@ var PlayScene = {
     _playerState: PlayerState.STOP, //estado del player
     _direction: Direction.NONE,  //dirección inicial del player. NONE es ninguna dirección.
 
-    //Método constructor...
-  create: function () {
-      //Creamos al player con un sprite por defecto.
-      //TODO 5 Creamos a rush 'rush'  con el sprite por defecto en el 10, 10 con la animación por defecto 'rush_idle01'
 
-      //TODO 4: Cargar el tilemap 'tilemap' y asignarle al tileset 'patrones' la imagen de sprites 'tiles'
+  create: function () {
+      this.game.physics.startSystem(Phaser.Physics.ARCADE);
+
+      this.game.physics.enable( [ this.enemies, this.triggers ], Phaser.Physics.ARCADE);
+
 
       this.map = this.game.add.tilemap('tilemap');
       this.map.addTilesetImage('patrones', 'tiles');
@@ -67,7 +78,8 @@ var PlayScene = {
       //plano de muerte
       this.death = this.map.createLayer('Death');
       this.teleport = this.map.createLayer('Teleport');
-      this._rush = this.game.add.sprite(100,3000, 'rush_idle01');
+      //this._rush = this.game.add.sprite(100,3000, 'rush_idle01');
+      this._rush = this.game.add.sprite(300,3100, 'rush_idle01');
       //Colisiones con el plano de muerte y con el plano de muerte y con suelo.
       this.map.setCollisionBetween(1, 5000, true, 'Death');
       this.map.setCollisionBetween(1, 5000, true, 'GroundLayer');
@@ -89,17 +101,26 @@ var PlayScene = {
                      Phaser.Animation.generateFrameNames('rush_jump',2,2,'',2),0,false);*/
       this.configure();
 
+
+      this.triggers = this.game.add.group();
+      this.triggers = this.game.add.physicsGroup();
+      this.triggers.enableBody = true;
+      this.triggers.physicsBodyType = Phaser.Physics.ARCADE;
+      this.t1 = this.triggers.create(5350,3500, 'trigger');//OK
+      this.t2 = this.triggers.create(5500, 2300, 'trigger');//OK
+      this.t3 = this.triggers.create(5400, 1500, 'trigger');// OK
+      this.triggers.setAll('body.immovable', true);
+      this.triggers.setAll('alpha', 0);
+      this.triggers.setAll('anchor.y', 1);
+
+
       this.enemies = this.game.add.group();
       this.enemies.enableBody = true;
 
 
-      /*for(var i = 0; i < 3; i++){
-        var enemy = new Enemy('enemy', 10, 10, 50, this);
-        this.enemies.add(enemy);
-      }*/
-
-      var enemy1 = new Enemy('enemy', 850, 3180, 50, this);
+      var enemy1 = new Enemy('enemy', 850, 3180, 0, this);
       this.enemies.add(enemy1);
+
 
       var enemy2 = new Enemy('enemy', 2500, 3450, 0, this);
       this.enemies.add(enemy2);
@@ -129,6 +150,20 @@ var PlayScene = {
         var enemyCollision = this.game.physics.arcade.collide(this._rush, this.enemies);
 
 
+        if(this.game.physics.arcade.collide(this._rush, this.t1)){
+          this._rush.reset(300, 2500);
+        }
+
+        if(this.game.physics.arcade.collide(this._rush, this.t2)){
+          this._rush.reset(500, 1600);
+        }
+
+        if(this.game.physics.arcade.collide(this._rush, this.t3)){
+          this._rush.reset(200, 400);
+        }
+
+
+
         if(this.game.input.keyboard.isDown(Phaser.Keyboard.P)){
           game.paused = true;
         }
@@ -142,7 +177,7 @@ var PlayScene = {
             case PlayerState.RUN:
                 if(this.isJumping(collisionWithTilemap)){
                     this._playerState = PlayerState.JUMP;
-                    this._initialJumpHeight = this._rush.y;
+                    this._initialJumpHeight = this._rush.y - 75;
                     //this._rush.animations.play('jump');
                 }
                 else{

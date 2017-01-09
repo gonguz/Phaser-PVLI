@@ -46,6 +46,7 @@ var PreloaderScene = {
 
     this.load.onLoadStart.add(this.loadStart, this);
 
+      this.game.load.image('trigger', 'images/trigger.png')
       this.game.load.image('tiles', 'images/Sprites2.png');
       this.game.load.image('tiles1', 'images/52088.png');
       this.game.load.image('enemy', 'images/enemy.png');
