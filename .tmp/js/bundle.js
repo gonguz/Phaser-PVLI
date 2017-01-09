@@ -1,4 +1,44 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var finalScene = {
+  create: function(){
+    this.game.world.setBounds(0,0,800,600);
+
+    var finalBackground = this.game.add.sprite(this.game.world.centerX,
+                                    this.game.world.centerY,
+                                    'finalBackground')
+    finalBackground.anchor.setTo(0.5, 0.5);
+
+    var finalText = this.game.add.sprite(this.game.world.centerX,
+                                    this.game.world.centerY/2,
+                                    'finalText');
+
+    finalText.anchor.setTo(0.5,0.5);
+
+    var buttonReply = this.game.add.button(this.game.world.centerX / 2,
+                                           this.game.world.centerY * 1.5,
+                                           'botonRestart',
+                                           this.actionOnClick,
+                                           this, 2, 1, 0);
+    buttonReply.anchor.set(0.5);
+
+    var buttonMenu = this.game.add.button(this.game.world.centerX*1.5,
+    this.game.world.centerY * 1.5, 'botonMenu', this.returnToMenu, this, 2, 1, 0);
+
+    buttonMenu.anchor.set(0.5);
+  },
+
+  actionOnClick: function(){
+      this.game.state.start('preloader');
+  },
+
+  returnToMenu: function(){
+    this.game.state.start('menu');
+  }
+};
+
+module.exports = finalScene;
+
+},{}],2:[function(require,module,exports){
 var GameOver = {
     create: function () {
 
@@ -39,7 +79,7 @@ var GameOver = {
 
 module.exports = GameOver;
 
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 'use strict';
 
 //TODO 1.1 Require de las escenas, play_scene, gameover_scene y menu_scene.
@@ -47,6 +87,7 @@ module.exports = GameOver;
 var playScene = require('./play_scene.js');
 var gameOver = require('./gameover_scene.js');
 var menuScene = require('./menu_scene.js');
+var finalScene = require('./final_scene.js');
 
 //  The Google WebFont Loader will look for this object, so create it before loading the script.
 
@@ -68,6 +109,8 @@ var BootScene = {
     this.game.load.image('pauseBackground', 'images/pauseBackground.jpg');
     this.game.load.image('pauseText', 'images/pauseText.png');
     this.game.load.image('pauseIcon', 'images/pauseIcon.png');
+    this.game.load.image('finalBackground', 'images/finalBackground.png');
+    this.game.load.image('finalText', 'images/finalText.png');
   },
 
   create: function () {
@@ -142,6 +185,7 @@ function init(){
   game.state.add('preloader', PreloaderScene);
   game.state.add('play', playScene);
   game.state.add('gameOver', gameOver);
+  game.state.add('finalScene', finalScene);
 
   //TODO 1.3 iniciar el state 'boot'.
 
@@ -153,7 +197,7 @@ window.onload = function () {
   WebFont.load(wfconfig);
 };
 
-},{"./gameover_scene.js":1,"./menu_scene.js":3,"./play_scene.js":4}],3:[function(require,module,exports){
+},{"./final_scene.js":1,"./gameover_scene.js":2,"./menu_scene.js":4,"./play_scene.js":5}],4:[function(require,module,exports){
 var MenuScene = {
     create: function () {
 
@@ -172,6 +216,8 @@ var MenuScene = {
                                                this, 2, 1, 0);
         buttonStart.anchor.set(0.5);
 
+
+
     },
 
     actionOnClick: function(){
@@ -181,7 +227,7 @@ var MenuScene = {
 
 module.exports = MenuScene;
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 'use strict';
 
 //Enumerados: PlayerState son los estado por los que pasa el player. Directions son las direcciones a las que se puede
@@ -232,6 +278,7 @@ var PlayScene = {
     t1: {},
     t2: {},
     t3: {},
+    t4: {},
     pauseBackground: {},
     pauseText: {},
     buttonMenu: {},
@@ -245,10 +292,8 @@ var PlayScene = {
 
 
   create: function () {
-      this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
-      this.game.physics.enable( [ this.enemies, this.triggers ], Phaser.Physics.ARCADE);
-
+      this.game.backgroundColor = "#FFFFFF"
 
       this.map = this.game.add.tilemap('tilemap');
       this.map.addTilesetImage('patrones', 'tiles');
@@ -292,7 +337,8 @@ var PlayScene = {
       this.triggers.physicsBodyType = Phaser.Physics.ARCADE;
       this.t1 = this.triggers.create(5350,3500, 'trigger');//OK
       this.t2 = this.triggers.create(5500, 2300, 'trigger');//OK
-      this.t3 = this.triggers.create(5400, 1500, 'trigger');// OK
+      this.t3 = this.triggers.create(5400, 1500, 'trigger');
+      this.t4 = this.triggers.create(5600, 550, 'trigger');// OK
       this.triggers.setAll('body.immovable', true);
       this.triggers.setAll('alpha', 0);
       this.triggers.setAll('anchor.y', 1);
@@ -346,6 +392,10 @@ var PlayScene = {
           this._rush.reset(200, 400);
         }
 
+        if(this.game.physics.arcade.collide(this._rush, this.t4)){
+          this.game.state.start('finalScene');
+        }
+
 
 
         if(this.game.input.keyboard.isDown(Phaser.Keyboard.P)){
@@ -361,7 +411,7 @@ var PlayScene = {
             case PlayerState.RUN:
                 if(this.isJumping(collisionWithTilemap)){
                     this._playerState = PlayerState.JUMP;
-                    this._initialJumpHeight = this._rush.y - 75;
+                    this._initialJumpHeight = this._rush.y - 90;
                     //this._rush.animations.play('jump');
                 }
                 else{
@@ -557,4 +607,4 @@ var PlayScene = {
 
 module.exports = PlayScene;
 
-},{}]},{},[2]);
+},{}]},{},[3]);

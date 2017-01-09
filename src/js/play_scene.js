@@ -48,6 +48,7 @@ var PlayScene = {
     t1: {},
     t2: {},
     t3: {},
+    t4: {},
     pauseBackground: {},
     pauseText: {},
     buttonMenu: {},
@@ -61,10 +62,8 @@ var PlayScene = {
 
 
   create: function () {
-      this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
-      this.game.physics.enable( [ this.enemies, this.triggers ], Phaser.Physics.ARCADE);
-
+      this.game.backgroundColor = "#FFFFFF"
 
       this.map = this.game.add.tilemap('tilemap');
       this.map.addTilesetImage('patrones', 'tiles');
@@ -108,7 +107,8 @@ var PlayScene = {
       this.triggers.physicsBodyType = Phaser.Physics.ARCADE;
       this.t1 = this.triggers.create(5350,3500, 'trigger');//OK
       this.t2 = this.triggers.create(5500, 2300, 'trigger');//OK
-      this.t3 = this.triggers.create(5400, 1500, 'trigger');// OK
+      this.t3 = this.triggers.create(5400, 1500, 'trigger');
+      this.t4 = this.triggers.create(5600, 550, 'trigger');// OK
       this.triggers.setAll('body.immovable', true);
       this.triggers.setAll('alpha', 0);
       this.triggers.setAll('anchor.y', 1);
@@ -162,6 +162,10 @@ var PlayScene = {
           this._rush.reset(200, 400);
         }
 
+        if(this.game.physics.arcade.collide(this._rush, this.t4)){
+          this.game.state.start('finalScene');
+        }
+
 
 
         if(this.game.input.keyboard.isDown(Phaser.Keyboard.P)){
@@ -177,7 +181,7 @@ var PlayScene = {
             case PlayerState.RUN:
                 if(this.isJumping(collisionWithTilemap)){
                     this._playerState = PlayerState.JUMP;
-                    this._initialJumpHeight = this._rush.y - 75;
+                    this._initialJumpHeight = this._rush.y - 90;
                     //this._rush.animations.play('jump');
                 }
                 else{

@@ -5,6 +5,7 @@
 var playScene = require('./play_scene.js');
 var gameOver = require('./gameover_scene.js');
 var menuScene = require('./menu_scene.js');
+var finalScene = require('./final_scene.js');
 
 //  The Google WebFont Loader will look for this object, so create it before loading the script.
 
@@ -26,6 +27,8 @@ var BootScene = {
     this.game.load.image('pauseBackground', 'images/pauseBackground.jpg');
     this.game.load.image('pauseText', 'images/pauseText.png');
     this.game.load.image('pauseIcon', 'images/pauseIcon.png');
+    this.game.load.image('finalBackground', 'images/finalBackground.png');
+    this.game.load.image('finalText', 'images/finalText.png');
   },
 
   create: function () {
@@ -100,6 +103,7 @@ function init(){
   game.state.add('preloader', PreloaderScene);
   game.state.add('play', playScene);
   game.state.add('gameOver', gameOver);
+  game.state.add('finalScene', finalScene);
 
   //TODO 1.3 iniciar el state 'boot'.
 

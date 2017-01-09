@@ -16,6 +16,8 @@ var MenuScene = {
                                                this, 2, 1, 0);
         buttonStart.anchor.set(0.5);
 
+
+
     },
 
     actionOnClick: function(){
