@@ -1,28 +1,27 @@
 var GameOver = {
     create: function () {
-        console.log("Game Over");
-        var button = this.game.add.button(400, 300,
-                                          'button',
-                                          this.actionOnClick,
-                                          this, 2, 1, 0);
-        button.anchor.set(0.5);
-        var goText = this.game.add.text(400, 100, "GameOver");
-        var text = this.game.add.text(0, 0, "Reset Game");
-        text.font = 'Sniglet';
-        goText.font = 'Sniglet';
-        text.anchor.set(0.5);
-        goText.anchor.set(0.5);
-        button.addChild(text);
 
-        //TODO 8 crear un boton con el texto 'Return Main Menu' que nos devuelva al menu del juego.
-        var returnButton = this.game.add.button(400, 300, 'button',
-        this.returnToMenu, this, 2, 1, 0);
+        this.game.stage.backgroundColor = "#000000";
+        this.game.world.setBounds(0,0,800,600);
+        var gameOverImage = this.game.add.sprite(this.game.world.centerX, this.game.world.centerY/3,
+        'gameOverImage');
+        gameOverImage.anchor.set(0.5);
 
-        returnButton.anchor.set(0.5);
-        var returnMenuText = this.game.add.text(0, 0, "Return Menu");
-        returnMenuText.font = 'Sniglet';
-        returnMenuText.anchor.set(0.5);
-        returnButton.addChild(returnMenuText);
+        var botonRestart = this.game.add.button(this.game.world.centerX,
+                                               this.game.world.centerY,
+                                               'botonRestart',
+                                               this.actionOnClick,
+                                               this, 2, 1, 0);
+
+        botonRestart.anchor.set(0.5);
+
+        var botonMenu = this.game.add.button(this.game.world.centerX,
+                                               this.game.world.centerY * 1.3,
+                                               'botonMenu',
+                                               this.returnToMenu,
+                                               this, 2, 1, 0);
+
+        botonMenu.anchor.set(0.5);
 
     },
 
@@ -32,9 +31,7 @@ var GameOver = {
 		this.game.state.start('play');
 	},
     returnToMenu: function(){
-      //Tuve que poner que haga de nuevo play, ya que si iba al menu, al volver
-      //a empezar y pulsando una tecla, volvía de nuevo al menu.
-      this.game.state.start('play');
+      this.game.state.start('menu');
     }
 
 };

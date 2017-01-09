@@ -15,8 +15,13 @@ var BootScene = {
   preload: function () {
     // load here assets required for the loading screen
     this.game.load.image('preloader_bar', 'images/preloader_bar.png');
-    this.game.load.spritesheet('button', 'images/buttons.png', 168, 70);
+    this.game.load.spritesheet('boton', 'images/boton.png', 168, 70);
     this.game.load.image('logo', 'images/phaser.png');
+    this.game.load.image('title', 'images/title.png');
+    this.game.load.image('starsBackground', 'images/starsBackground.png');
+    this.game.load.image('gameOverImage', 'images/gameOverImage.png');
+    this.game.load.image('botonRestart', 'images/botonRestart.png');
+    this.game.load.image('botonMenu', 'images/botonMenu.png');
   },
 
   create: function () {
@@ -40,7 +45,7 @@ var PreloaderScene = {
       this.game.load.image('tiles', 'images/Sprites2.png');
       this.game.load.image('tiles1', 'images/52088.png');
       this.game.load.image('enemy', 'images/enemy.png');
-      this.game.load.image('enemyB', 'images/enemyAl.png')
+      this.game.load.image('enemyB', 'images/enemyAl.png');
       this.game.load.tilemap('tilemap', 'images/map.json', null, Phaser.Tilemap.TILED_JSON);
       this.game.load.atlasJSONHash('rush_idle01', 'images/rush_spritesheet.png',
       'images/rush_spritesheet.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);

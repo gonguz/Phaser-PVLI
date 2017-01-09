@@ -75,16 +75,17 @@ var PlayScene = {
       this.groundLayer.resizeWorld(); //resize world and adjust to the screen
 
       //nombre de la animación, frames, framerate, isloop
-      this._rush.animations.add('run',
+      /*this._rush.animations.add('run',
                     Phaser.Animation.generateFrameNames('rush_run',1,5,'',2),10,true);
       this._rush.animations.add('stop',
                     Phaser.Animation.generateFrameNames('rush_idle',1,1,'',2),0,false);
       this._rush.animations.add('jump',
-                     Phaser.Animation.generateFrameNames('rush_jump',2,2,'',2),0,false);
+                     Phaser.Animation.generateFrameNames('rush_jump',2,2,'',2),0,false);*/
       this.configure();
 
       this.enemies = this.game.add.group();
       this.enemies.enableBody = true;
+
 
       /*for(var i = 0; i < 3; i++){
         var enemy = new Enemy('enemy', 10, 10, 50, this);
@@ -128,16 +129,16 @@ var PlayScene = {
                 if(this.isJumping(collisionWithTilemap)){
                     this._playerState = PlayerState.JUMP;
                     this._initialJumpHeight = this._rush.y;
-                    this._rush.animations.play('jump');
+                    //this._rush.animations.play('jump');
                 }
                 else{
                     if(movement !== Direction.NONE){
                         this._playerState = PlayerState.RUN;
-                        this._rush.animations.play('run');
+                        //this._rush.animations.play('run');
                     }
                     else{
                         this._playerState = PlayerState.STOP;
-                        this._rush.animations.play('stop');
+                        //this._rush.animations.play('stop');
                     }
                 }
                 break;
@@ -153,11 +154,11 @@ var PlayScene = {
                 if(this.isStanding()){
                     if(movement !== Direction.NONE){
                         this._playerState = PlayerState.RUN;
-                        this._rush.animations.play('run');
+                        //this._rush.animations.play('run');
                     }
                     else{
                         this._playerState = PlayerState.STOP;
-                        this._rush.animations.play('stop');
+                        //this._rush.animations.play('stop');
                     }
                 }
                 break;
@@ -237,7 +238,7 @@ var PlayScene = {
     configure: function(){
         //Start the Arcade Physics systems
         this.game.world.setBounds(0, 0, 8000, 6000);
-        this.game.physics.startSystem(Phaser.Physics.ARCADE);
+        this.game.physics.startSystem(Phaser.Physics.ARCADE);
         this.game.stage.backgroundColor = '#a9f0ff';
         this.game.physics.arcade.enable(this._rush);
 

@@ -1,29 +1,45 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var GameOver = {
     create: function () {
-        console.log("Game Over");
-        var button = this.game.add.button(400, 300,
-                                          'button',
-                                          this.actionOnClick,
-                                          this, 2, 1, 0);
-        button.anchor.set(0.5);
-        var goText = this.game.add.text(400, 100, "GameOver");
+
+        this.game.stage.backgroundColor = "#000000";
+        this.game.world.setBounds(0,0,800,600);
+        var gameOverImage = this.game.add.sprite(this.game.world.centerX, this.game.world.centerY/3,
+        'gameOverImage');
+        gameOverImage.anchor.set(0.5);
+
+        var botonRestart = this.game.add.button(this.game.world.centerX,
+                                               this.game.world.centerY,
+                                               'botonRestart',
+                                               this.actionOnClick,
+                                               this, 2, 1, 0);
+
+        botonRestart.anchor.set(0.5);
+
+        var botonMenu = this.game.add.button(this.game.world.centerX,
+                                               this.game.world.centerY * 1.3,
+                                               'botonMenu',
+                                               this.returnToMenu,
+                                               this, 2, 1, 0);
+
+        botonMenu.anchor.set(0.5);
+        /*var goText = this.game.add.text(400, 100, "GameOver");
         var text = this.game.add.text(0, 0, "Reset Game");
         text.font = 'Sniglet';
         goText.font = 'Sniglet';
         text.anchor.set(0.5);
         goText.anchor.set(0.5);
-        button.addChild(text);
+        button.addChild(text);*/
 
         //TODO 8 crear un boton con el texto 'Return Main Menu' que nos devuelva al menu del juego.
-        var returnButton = this.game.add.button(400, 300, 'button',
+        /*var returnButton = this.game.add.button(400, 300, 'button',
         this.returnToMenu, this, 2, 1, 0);
 
         returnButton.anchor.set(0.5);
         var returnMenuText = this.game.add.text(0, 0, "Return Menu");
         returnMenuText.font = 'Sniglet';
         returnMenuText.anchor.set(0.5);
-        returnButton.addChild(returnMenuText);
+        returnButton.addChild(returnMenuText);*/
 
     },
 
@@ -35,7 +51,7 @@ var GameOver = {
     returnToMenu: function(){
       //Tuve que poner que haga de nuevo play, ya que si iba al menu, al volver
       //a empezar y pulsando una tecla, volvía de nuevo al menu.
-      this.game.state.start('play');
+      this.game.state.start('menu');
     }
 
 };
@@ -60,8 +76,13 @@ var BootScene = {
   preload: function () {
     // load here assets required for the loading screen
     this.game.load.image('preloader_bar', 'images/preloader_bar.png');
-    this.game.load.spritesheet('button', 'images/buttons.png', 168, 70);
+    this.game.load.spritesheet('boton', 'images/boton.png', 168, 70);
     this.game.load.image('logo', 'images/phaser.png');
+    this.game.load.image('title', 'images/title.png');
+    this.game.load.image('starsBackground', 'images/starsBackground.png');
+    this.game.load.image('gameOverImage', 'images/gameOverImage.png');
+    this.game.load.image('botonRestart', 'images/botonRestart.png');
+    this.game.load.image('botonMenu', 'images/botonMenu.png');
   },
 
   create: function () {
@@ -85,7 +106,7 @@ var PreloaderScene = {
       this.game.load.image('tiles', 'images/Sprites2.png');
       this.game.load.image('tiles1', 'images/52088.png');
       this.game.load.image('enemy', 'images/enemy.png');
-      this.game.load.image('enemyB', 'images/enemyAl.png')
+      this.game.load.image('enemyB', 'images/enemyAl.png');
       this.game.load.tilemap('tilemap', 'images/map.json', null, Phaser.Tilemap.TILED_JSON);
       this.game.load.atlasJSONHash('rush_idle01', 'images/rush_spritesheet.png',
       'images/rush_spritesheet.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
@@ -149,20 +170,20 @@ window.onload = function () {
 var MenuScene = {
     create: function () {
 
-        var logo = this.game.add.sprite(this.game.world.centerX,
+        this.game.world.setBounds(0,0,800,600);
+
+        var starsBackground = this.game.add.sprite(this.game.world.centerX,
                                         this.game.world.centerY,
-                                        'logo');
-        logo.anchor.setTo(0.5, 0.5);
+                                        'starsBackground')
+        starsBackground.anchor.setTo(0.5, 0.5);
+
+        var title = this.game.add.sprite(this.game.world.centerX/7, this.game.world.centerY/5, 'title');
         var buttonStart = this.game.add.button(this.game.world.centerX,
                                                this.game.world.centerY,
-                                               'button',
+                                               'boton',
                                                this.actionOnClick,
                                                this, 2, 1, 0);
         buttonStart.anchor.set(0.5);
-        var textStart = this.game.add.text(0, 0, "Start");
-        textStart.font = 'Sniglet';
-        textStart.anchor.set(0.5);
-        buttonStart.addChild(textStart);
     },
 
     actionOnClick: function(){
@@ -250,16 +271,17 @@ var PlayScene = {
       this.groundLayer.resizeWorld(); //resize world and adjust to the screen
 
       //nombre de la animación, frames, framerate, isloop
-      this._rush.animations.add('run',
+      /*this._rush.animations.add('run',
                     Phaser.Animation.generateFrameNames('rush_run',1,5,'',2),10,true);
       this._rush.animations.add('stop',
                     Phaser.Animation.generateFrameNames('rush_idle',1,1,'',2),0,false);
       this._rush.animations.add('jump',
-                     Phaser.Animation.generateFrameNames('rush_jump',2,2,'',2),0,false);
+                     Phaser.Animation.generateFrameNames('rush_jump',2,2,'',2),0,false);*/
       this.configure();
 
       this.enemies = this.game.add.group();
       this.enemies.enableBody = true;
+
 
       /*for(var i = 0; i < 3; i++){
         var enemy = new Enemy('enemy', 10, 10, 50, this);
@@ -303,16 +325,16 @@ var PlayScene = {
                 if(this.isJumping(collisionWithTilemap)){
                     this._playerState = PlayerState.JUMP;
                     this._initialJumpHeight = this._rush.y;
-                    this._rush.animations.play('jump');
+                    //this._rush.animations.play('jump');
                 }
                 else{
                     if(movement !== Direction.NONE){
                         this._playerState = PlayerState.RUN;
-                        this._rush.animations.play('run');
+                        //this._rush.animations.play('run');
                     }
                     else{
                         this._playerState = PlayerState.STOP;
-                        this._rush.animations.play('stop');
+                        //this._rush.animations.play('stop');
                     }
                 }
                 break;
@@ -328,11 +350,11 @@ var PlayScene = {
                 if(this.isStanding()){
                     if(movement !== Direction.NONE){
                         this._playerState = PlayerState.RUN;
-                        this._rush.animations.play('run');
+                        //this._rush.animations.play('run');
                     }
                     else{
                         this._playerState = PlayerState.STOP;
-                        this._rush.animations.play('stop');
+                        //this._rush.animations.play('stop');
                     }
                 }
                 break;
@@ -412,7 +434,7 @@ var PlayScene = {
     configure: function(){
         //Start the Arcade Physics systems
         this.game.world.setBounds(0, 0, 8000, 6000);
-        this.game.physics.startSystem(Phaser.Physics.ARCADE);
+        this.game.physics.startSystem(Phaser.Physics.ARCADE);
         this.game.stage.backgroundColor = '#a9f0ff';
         this.game.physics.arcade.enable(this._rush);
 
