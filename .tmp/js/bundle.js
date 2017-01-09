@@ -93,8 +93,9 @@ var PreloaderScene = {
       this.game.load.image('enemy', 'images/enemy.png');
       this.game.load.image('enemyB', 'images/enemyAl.png');
       this.game.load.tilemap('tilemap', 'images/map.json', null, Phaser.Tilemap.TILED_JSON);
-      this.game.load.atlasJSONHash('rush_idle01', 'images/rush_spritesheet.png',
-      'images/rush_spritesheet.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
+      /*this.game.load.atlasJSONHash('rush_idle01', 'images/rush_spritesheet.png',
+      'images/rush_spritesheet.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);*/
+      this.game.load.image('rush_idle01', 'images/rush_spritesheet.png');
 
     this.load.onLoadComplete.add(this.loadComplete, this);
 
@@ -310,13 +311,13 @@ var PlayScene = {
         var movement = this.GetMovement();
         var enemyCollision = this.game.physics.arcade.collide(this._rush, this.enemies);
 
-        if (this.game.input.keyboard.isDown(Phaser.Keyboard.P)){
-            game.paused = true;
-            this.pausedMenu();
+
+        if(this.game.input.keyboard.isDown(Phaser.Keyboard.P)){
+          game.paused = true;
         }
 
         this.keyPause = this.game.input.keyboard.addKey(Phaser.Keyboard.P);
-        this.keyPause.onDown.add(this.pausedMenu, this);
+        this.keyPause.onDown.add(this.pausedMenu,this);
         //transitions
         switch(this._playerState)
         {
@@ -417,17 +418,15 @@ var PlayScene = {
                                              this.actionOnClickResume,
                                              this, 2, 1, 0);
 
-      this.buttonResume.fixedToCamera = true;
-
       this.pauseIcon = this.game.add.sprite(this.game.world.centerX * 0.85,
                                              this.game.world.centerY * 1.35, 'pauseIcon');
-      this.pauseIcon.fixedToCamera = true;
+
 
       this.game.physics.arcade.isPaused = (this.game.physics.arcade.isPaused) ? false : true;
     },
 
     actionOnClickResume: function(){
-        //this.game.world.setBounds(0,0,800,600);
+        this.game.world.setBounds(this._rush);
         this.pauseBackground.visible = false;
         this.pauseText.visible = false;
         this.buttonMenu.visible = false;
