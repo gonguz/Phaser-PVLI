@@ -136,6 +136,7 @@ var PreloaderScene = {
       this.game.load.image('tiles1', 'images/52088.png');
       this.game.load.image('enemy', 'images/enemy.png');
       this.game.load.image('enemyB', 'images/enemyAl.png');
+      this.game.load.image('finalEnemy', 'images/finalEnemy.png');
       this.game.load.tilemap('tilemap', 'images/map.json', null, Phaser.Tilemap.TILED_JSON);
       /*this.game.load.atlasJSONHash('rush_idle01', 'images/rush_spritesheet.png',
       'images/rush_spritesheet.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);*/
@@ -236,12 +237,11 @@ var PlayerState = {'JUMP':0, 'RUN':1, 'FALLING':2, 'STOP':3}
 var Direction = {'LEFT':0, 'RIGHT':1, 'NONE':3}
 
 
-function Enemy(sprite, posX, posY, speed, game){
+function Enemy(sprite, posX, posY, game){
   Phaser.Sprite.call(this, game, posX, posY, sprite);
   //Phaser.Sprite.call(this, game, posX, posY, 'enemyB');
   game.physics.enable(this, Phaser.Physics.ARCADE, this);
   this.standingPos = this.posX;
-  this.body.velocity.x = -speed;
   this.body.gravity.y = 30;
   this.scale.setTo(0.25,0.20);
 }
@@ -249,7 +249,7 @@ function Enemy(sprite, posX, posY, speed, game){
 	Enemy.prototype.constructor = Enemy;
 
 
-  Enemy.prototype.move = function(ranMin, ranMax){
+  /*Enemy.prototype.move = function(ranMin, ranMax){
     if(this.posX === this.standingPos - ranMin){ //&& this.x < this.initialPos + max)
         this.body.velocity.posX = this.speed;
         if(this.scale.posX > 0)
@@ -260,14 +260,7 @@ function Enemy(sprite, posX, posY, speed, game){
         if(this.scale.posX < 0)
             this.scale.posX *= -1;
     }
-  }
-
-function Trigger(sprite, posX, posY, game){
-  Phaser.Sprite.call(this, game, posX, posY, sprite);
-  game.physics.enable(this, Phaser.Physics.ARCADE, this);
-}
-  Trigger.prototype = Object.create(Phaser.Sprite.prototype);
-  Trigger.prototype.constructor = Trigger;
+  }*/
 
 //Scena de juego.
 var PlayScene = {
@@ -279,6 +272,14 @@ var PlayScene = {
     t2: {},
     t3: {},
     t4: {},
+    enemy1: {},
+    enemy2: {},
+    enemy3: {},
+    enemy4: {},
+    enemy5: {},
+    enemy6: {},
+    enemy7: {},
+    finalEnemy: {},
     pauseBackground: {},
     pauseText: {},
     buttonMenu: {},
@@ -345,40 +346,51 @@ var PlayScene = {
 
 
       this.enemies = this.game.add.group();
+      this.enemies = this.game.add.physicsGroup();
+      this.enemies.physicsBodyType = Phaser.Physics.ARCADE;
       this.enemies.enableBody = true;
 
 
-      var enemy1 = new Enemy('enemy', 850, 3180, 0, this);
-      this.enemies.add(enemy1);
+      this.enemy1 = new Enemy('enemy', 850, 3180, this);
+      this.enemies.add(this.enemy1);
 
 
-      var enemy2 = new Enemy('enemy', 2500, 3450, 0, this);
-      this.enemies.add(enemy2);
+      this.enemy2 = new Enemy('enemy', 2500, 3450, this);
+      this.enemies.add(this.enemy2);
 
-      var enemy3 = new Enemy('enemy', 4900, 3300, 0, this);
-      this.enemies.add(enemy3);
+      this.enemy3 = new Enemy('enemy', 4900, 3250, this);
+      this.enemies.add(this.enemy3);
 
-      var enemy4 = new Enemy('enemy', 3800, 2500, 0, this);
-      this.enemies.add(enemy4);
+      this.enemy4 = new Enemy('enemy', 3720, 2600, this);
+      this.enemies.add(this.enemy4);
 
-      var enemy5 = new Enemy('enemy', 5100, 2500, 0, this);
-      this.enemies.add(enemy5);
+      this.enemy5 = new Enemy('enemy', 5100, 2600, this);
+      this.enemies.add(this.enemy5);
 
-      var enemy6 = new Enemy('enemyB', 5000, 1350, 0, this);
-      this.enemies.add(enemy6);
+      this.enemy6 = new Enemy('enemyB', 5000, 1350, this);
+      this.enemies.add(this.enemy6);
 
-      var enemy7 = new Enemy('enemyB', 900, 1400, 0, this);
-      this.enemies.add(enemy7);
+      this.enemy7 = new Enemy('enemyB', 900, 1450, this);
+      this.enemies.add(this.enemy7);
+
+      this.finalEnemy = new Enemy('finalEnemy', 4100, 375, this);
+      this.enemies.add(this.finalEnemy);
   },
 
     //IS called one per frame.
     update: function () {
-        var moveDirection = new Phaser.Point(0, 0);
+        var moveDirection = new Phaser.Point(0,0);
         var collisionWithTilemap = this.game.physics.arcade.collide(this._rush, this.groundLayer);
         var enemyWithTilemap = this.game.physics.arcade.collide(this.enemies, this.groundLayer);
         var movement = this.GetMovement();
         var enemyCollision = this.game.physics.arcade.collide(this._rush, this.enemies);
 
+        this.enemyMovement();
+
+
+        if(enemyCollision){
+          this.game.state.start('gameOver');
+        }
 
         if(this.game.physics.arcade.collide(this._rush, this.t1)){
           this._rush.reset(300, 2500);
@@ -475,9 +487,6 @@ var PlayScene = {
         this.movement(moveDirection,5,
                       this.backgroundLayer.layer.widthInPixels*this.backgroundLayer.scale.x - 10);
 
-                      this.enemies.forEach(function (aux){
-                          aux.move(1, 3);
-                      });
         this.checkPlayerFell();
     },
 
@@ -521,6 +530,71 @@ var PlayScene = {
         this.game.physics.arcade.isPaused = (this.game.physics.arcade.isPaused) ? false : true;
 
     },
+
+    enemyMovement: function(){
+
+      if(this.enemy1.body.position.x >= 1000 || this.enemy1.body.velocity.x === 0){
+        this.enemy1.body.velocity.x = -250;
+      }
+      if(this.enemy1.body.position.x <= 500){
+        this.enemy1.body.velocity.x = 250;
+      }
+
+      if(this.enemy2.body.position.x >= 2750 || this.enemy2.body.velocity.x === 0){
+        this.enemy2.body.velocity.x = -250;
+      }
+      if(this.enemy2.body.position.x <= 2200){
+        this.enemy2.body.velocity.x = 250;
+      }
+
+      if(this.enemy3.body.position.x >= 5100 || this.enemy3.body.velocity.x === 0){
+        this.enemy3.body.velocity.x = -250;
+      }
+      if(this.enemy3.body.position.x <= 4700){
+        this.enemy3.body.velocity.x = 250;
+      }
+
+
+      if(this.enemy4.body.position.x >= 3900 || this.enemy4.body.velocity.x === 0){
+        this.enemy4.body.velocity.x = -150;
+      }
+      if(this.enemy4.body.position.x <= 3550){
+        this.enemy4.body.velocity.x = 150;
+      }
+
+      if(this.enemy5.body.position.x >= 5150 || this.enemy5.body.velocity.x === 0){
+        this.enemy5.body.velocity.x = -250;
+      }
+      if(this.enemy5.body.position.x <= 5000){
+        this.enemy5.body.velocity.x = 250;
+      }
+
+      if(this.enemy6.body.position.x >= 5200 || this.enemy6.body.velocity.x === 0){
+        this.enemy6.body.velocity.x = -150;
+      }
+      if(this.enemy6.body.position.x <= 4800){
+        this.enemy6.body.velocity.x = 150;
+      }
+
+      if(this.enemy7.body.position.x >= 1100 || this.enemy7.body.velocity.x === 0){
+        this.enemy7.body.velocity.x = -100;
+      }
+      if(this.enemy7.body.position.x <= 850){
+        this.enemy7.body.velocity.x = 100;
+      }
+
+      if(this.finalEnemy.body.position.x >= 4300 || this.finalEnemy.body.velocity.x === 0){
+        this.finalEnemy.body.velocity.x = -400;
+      }
+      if(this.finalEnemy.body.position.x <= 3800){
+        this.finalEnemy.body.velocity.x = 400;
+      }
+
+
+
+
+    },
+
 
     returnToMenu: function(){
       this.game.state.start('menu');
