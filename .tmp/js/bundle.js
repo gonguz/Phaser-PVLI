@@ -423,7 +423,7 @@ var PlayScene = {
             case PlayerState.RUN:
                 if(this.isJumping(collisionWithTilemap)){
                     this._playerState = PlayerState.JUMP;
-                    this._initialJumpHeight = this._rush.y - 90;
+                    this._initialJumpHeight = this._rush.y - 40;
                     //this._rush.animations.play('jump');
                 }
                 else{
