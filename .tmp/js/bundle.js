@@ -272,7 +272,9 @@ function Enemy(sprite, posX, posY, game){
   }
 
   var bullets;
+  var loop;
   var enemies;
+  var cursors;
   var fireRate = 100;
   var nextFire = 0;
   var numBalas = 20;
@@ -313,7 +315,7 @@ var PlayScene = {
       this.map.addTilesetImage('patrones', 'tiles');
       this.map.addTilesetImage('patrones1', 'tiles1');
 
-
+      this.cursors = this.game.input.keyboard.createCursorKeys();
 
       //Creacion de las layers
       this.backgroundLayer = this.map.createLayer('BackgroundLayer');
@@ -417,13 +419,55 @@ var PlayScene = {
         var movement = this.GetMovement();
         var enemyCollision = this.game.physics.arcade.collide(this._rush, this.enemies);
         //var enemyWBullet = this.game.physics.arcade.collide(this.bullets, this.enemies);
-
         this.enemyMovement();
 
-        //this.game.camera.flash(0xEBEBEB, 3000);
-        console.log("VIDAS: ", this.enemy1.lifes);
+        if (this.cursors.left.isDown)
+        {
+          this._rush.body.velocity.x = -250;
+            if(this._rush.scale.x > 0)
+                this._rush.scale.x *= -1;
+        }
 
-        if (this.game.input.activePointer.leftButton.isDown)
+        if (this.cursors.right.isDown)
+        {
+          this._rush.body.velocity.x = 250;
+            if(this._rush.scale.x < 0)
+                this._rush.scale.x *= -1;
+        }
+
+        /*if(this.game.input.keyboard.isDown(Phaser.Keyboard.D)){
+          this._rush.body.velocity.x = 250;
+            if(this._rush.scale.x < 0)
+                this._rush.scale.x *= -1;
+        }
+        if(this.game.input.keyboard.isDown(Phaser.Keyboard.A)){
+          this._rush.body.velocity.x = -250;
+            if(this._rush.scale.x > 0)
+                this._rush.scale.x *= -1;
+        }*/
+
+        /*this.movement(moveDirection,5,
+                      this.backgroundLayer.layer.widthInPixels*this.backgroundLayer.scale.x - 10);*/
+
+        //this._rush.body.velocity.x = 0;
+
+        /*if(this.game.input.keyboard.isDown(Phaser.Keyboard.D)){
+          if(this._rush.scale.x < 0){
+              this._rush.scale.x *= -1;
+            }
+          this._rush.body.velocity.x = 500;
+        }
+
+        if(this.game.input.keyboard.isDown(Phaser.Keyboard.A)){
+          if(this._rush.scale.x > 0){
+              this._rush.scale.x *= -1;
+            }
+          this._rush.body.velocity.x = -300;
+        }*/
+
+        //this.game.camera.flash(0xEBEBEB, 3000);
+
+        if (this.game.input.activePointer.isDown)
         {
           this.fire();
           numBalas--;
@@ -455,7 +499,7 @@ var PlayScene = {
         this.keyPause = this.game.input.keyboard.addKey(Phaser.Keyboard.P);
         this.keyPause.onDown.add(this.pausedMenu,this);
         //transitions
-        switch(this._playerState)
+        /*switch(this._playerState)
         {
             case PlayerState.STOP:
             case PlayerState.RUN:
@@ -525,7 +569,7 @@ var PlayScene = {
         this.movement(moveDirection,5,
                       this.backgroundLayer.layer.widthInPixels*this.backgroundLayer.scale.x - 10);
 
-        this.checkPlayerFell();
+        this.checkPlayerFell();*/
     },
 
     pausedMenu: function(){
@@ -582,23 +626,26 @@ var PlayScene = {
     fire: function() {
 
       if (this.game.time.now > nextFire && this.bullets.countDead() > 0)
-      {
-        nextFire = this.game.time.now + fireRate;
+        {
+          nextFire = this.game.time.now + fireRate;
 
-        var bullet = this.bullets.getFirstDead();
+          var bullet = this.bullets.getFirstDead();
 
-        if(this.game.input.keyboard.isDown(Phaser.Keyboard.D)){
-          bullet.reset(this._rush.x+50, this._rush.y+10);
-          bullet.body.velocity.x = 500;
-        } if(this.game.input.keyboard.isDown(Phaser.Keyboard.A)){
-
-            if(bullet.scale.x > 0){
+          if(this._rush.body.velocity.x === 250){
+            if(bullet.scale.x < 0){
                 bullet.scale.x *= -1;
             }
-            bullet.reset(this._rush.x-50, this._rush.y+10);
-            bullet.body.velocity.x = -500;
+            bullet.reset(this._rush.x+50, this._rush.y+10);
+            bullet.body.velocity.x = 500;
+          } if(this._rush.body.velocity.x === -250){
+
+              if(bullet.scale.x > 0){
+                  bullet.scale.x *= -1;
+              }
+              bullet.reset(this._rush.x-50, this._rush.y+10);
+              bullet.body.velocity.x = -500;
+          }
         }
-      }
     },
 
     enemyMovement: function(){
@@ -619,9 +666,9 @@ var PlayScene = {
     },
 
 
-    canJump: function(collisionWithTilemap){
+    /*canJump: function(collisionWithTilemap){
         return this.isStanding() && collisionWithTilemap || this._jamping;
-    },
+    },*/
 
     onPlayerFell: function(){
         //TODO 6 Carga de 'gameOver';
@@ -633,14 +680,14 @@ var PlayScene = {
             this.onPlayerFell();
     },
 
-    isStanding: function(){
+    /*isStanding: function(){
         return this._rush.body.blocked.down || this._rush.body.touching.down
-    },
+    },*/
 
-    isJumping: function(collisionWithTilemap){
+    /*isJumping: function(collisionWithTilemap){
         return this.canJump(collisionWithTilemap) &&
             this.game.input.keyboard.isDown(Phaser.Keyboard.W);
-    },
+    },*/
 
     GetMovement: function(){
         if(this.game.input.keyboard.isDown(Phaser.Keyboard.D)){
@@ -660,7 +707,7 @@ var PlayScene = {
         this.game.physics.arcade.enable(this._rush);
 
         this._rush.body.bounce.y = 0.2;
-        this._rush.body.gravity.y = 20000;
+        this._rush.body.gravity.y = 2000;
         this._rush.body.gravity.x = 0;
         this._rush.body.velocity.x = 200;
         this.game.camera.posX = this._rush.posX;
