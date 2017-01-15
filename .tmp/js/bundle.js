@@ -272,7 +272,8 @@ function Enemy(sprite, posX, posY, game){
   }
 
   var bullets;
-  var loop;
+  var jumping;
+  var jumpTime = 0;
   var enemies;
   var cursors;
   var fireRate = 100;
@@ -316,6 +317,7 @@ var PlayScene = {
       this.map.addTilesetImage('patrones1', 'tiles1');
 
       this.cursors = this.game.input.keyboard.createCursorKeys();
+      //this.jumping = this.game.input.keyboard.addKey(Phaser.Keyboard.W);
 
       //Creacion de las layers
       this.backgroundLayer = this.map.createLayer('BackgroundLayer');
@@ -418,61 +420,18 @@ var PlayScene = {
         var enemyWithTilemap = this.game.physics.arcade.collide(this.enemies, this.groundLayer);
         var movement = this.GetMovement();
         var enemyCollision = this.game.physics.arcade.collide(this._rush, this.enemies);
-        //var enemyWBullet = this.game.physics.arcade.collide(this.bullets, this.enemies);
         this.enemyMovement();
+        this.playerMovement();
+        this.checkPlayerFell();
 
-        if (this.cursors.left.isDown)
+
+        if (this.game.input.keyboard.isDown(Phaser.Keyboard.L))
         {
-          this._rush.body.velocity.x = -250;
-            if(this._rush.scale.x > 0)
-                this._rush.scale.x *= -1;
+            this.game.camera.flash(0xEBEBEB, 150);
+            this.fire();
+            console.log("HHH", numBalas);
         }
 
-        if (this.cursors.right.isDown)
-        {
-          this._rush.body.velocity.x = 250;
-            if(this._rush.scale.x < 0)
-                this._rush.scale.x *= -1;
-        }
-
-        /*if(this.game.input.keyboard.isDown(Phaser.Keyboard.D)){
-          this._rush.body.velocity.x = 250;
-            if(this._rush.scale.x < 0)
-                this._rush.scale.x *= -1;
-        }
-        if(this.game.input.keyboard.isDown(Phaser.Keyboard.A)){
-          this._rush.body.velocity.x = -250;
-            if(this._rush.scale.x > 0)
-                this._rush.scale.x *= -1;
-        }*/
-
-        /*this.movement(moveDirection,5,
-                      this.backgroundLayer.layer.widthInPixels*this.backgroundLayer.scale.x - 10);*/
-
-        //this._rush.body.velocity.x = 0;
-
-        /*if(this.game.input.keyboard.isDown(Phaser.Keyboard.D)){
-          if(this._rush.scale.x < 0){
-              this._rush.scale.x *= -1;
-            }
-          this._rush.body.velocity.x = 500;
-        }
-
-        if(this.game.input.keyboard.isDown(Phaser.Keyboard.A)){
-          if(this._rush.scale.x > 0){
-              this._rush.scale.x *= -1;
-            }
-          this._rush.body.velocity.x = -300;
-        }*/
-
-        //this.game.camera.flash(0xEBEBEB, 3000);
-
-        if (this.game.input.activePointer.isDown)
-        {
-          this.fire();
-          numBalas--;
-        }
-        console.log("Te quedan: ", numBalas);
         if(enemyCollision){
           this.game.state.start('gameOver');
         }
@@ -498,78 +457,6 @@ var PlayScene = {
 
         this.keyPause = this.game.input.keyboard.addKey(Phaser.Keyboard.P);
         this.keyPause.onDown.add(this.pausedMenu,this);
-        //transitions
-        /*switch(this._playerState)
-        {
-            case PlayerState.STOP:
-            case PlayerState.RUN:
-                if(this.isJumping(collisionWithTilemap)){
-                    this._playerState = PlayerState.JUMP;
-                    this._initialJumpHeight = this._rush.y - 40;
-                    //this._rush.animations.play('jump');
-                }
-                else{
-                    if(movement !== Direction.NONE){
-                        this._playerState = PlayerState.RUN;
-                        //this._rush.animations.play('run');
-                    }
-                    else{
-                        this._playerState = PlayerState.STOP;
-                        //this._rush.animations.play('stop');
-                    }
-                }
-                break;
-
-            case PlayerState.JUMP:
-
-                var currentJumpHeight = this._rush.y - this._initialJumpHeight;
-                this._playerState = (currentJumpHeight*currentJumpHeight < this._jumpHight*this._jumpHight)
-                    ? PlayerState.JUMP : PlayerState.FALLING;
-                break;
-
-            case PlayerState.FALLING:
-                if(this.isStanding()){
-                    if(movement !== Direction.NONE){
-                        this._playerState = PlayerState.RUN;
-                        //this._rush.animations.play('run');
-                    }
-                    else{
-                        this._playerState = PlayerState.STOP;
-                        //this._rush.animations.play('stop');
-                    }
-                }
-                break;
-        }
-        //States
-        switch(this._playerState){
-
-            case PlayerState.STOP:
-                moveDirection.x = 0;
-                break;
-            case PlayerState.JUMP:
-            case PlayerState.RUN:
-            case PlayerState.FALLING:
-                if(movement === Direction.RIGHT){
-                    moveDirection.x = this._speed;
-                    if(this._rush.scale.x < 0)
-                        this._rush.scale.x *= -1;
-                }
-                else{
-                    moveDirection.x = -this._speed;
-                    if(this._rush.scale.x > 0)
-                        this._rush.scale.x *= -1;
-                }
-                if(this._playerState === PlayerState.JUMP)
-                    moveDirection.y = -this._jumpSpeed;
-                if(this._playerState === PlayerState.FALLING)
-                    moveDirection.y = 0;
-                break;
-        }
-        //movement
-        this.movement(moveDirection,5,
-                      this.backgroundLayer.layer.widthInPixels*this.backgroundLayer.scale.x - 10);
-
-        this.checkPlayerFell();*/
     },
 
     pausedMenu: function(){
@@ -612,6 +499,27 @@ var PlayScene = {
       bullet.kill();
     },
 
+    playerMovement: function(){
+      if (this.game.input.keyboard.isDown(Phaser.Keyboard.A))
+      {
+        this._rush.body.velocity.x = -400;
+          if(this._rush.scale.x > 0)
+              this._rush.scale.x *= -1;
+      }
+
+      else if (this.game.input.keyboard.isDown(Phaser.Keyboard.D))
+      {
+        this._rush.body.velocity.x = 400;
+          if(this._rush.scale.x < 0)
+              this._rush.scale.x *= -1;
+      }
+
+
+      if( this.game.input.keyboard.isDown(Phaser.Keyboard.W) && this._rush.body.onFloor() ) {
+        this._rush.body.velocity.y = -850;
+      }
+    },
+
     actionOnClickResume: function(){
         this.game.world.setBounds(this._rush);
         this.pauseBackground.visible = false;
@@ -619,33 +527,35 @@ var PlayScene = {
         this.buttonMenu.visible = false;
         this.buttonResume.visible = false;
         this.pauseIcon.visible = false;
+        this._rush.body.velocity.x = 0;
         this.game.physics.arcade.isPaused = (this.game.physics.arcade.isPaused) ? false : true;
 
     },
 
     fire: function() {
-
       if (this.game.time.now > nextFire && this.bullets.countDead() > 0)
         {
           nextFire = this.game.time.now + fireRate;
 
           var bullet = this.bullets.getFirstDead();
 
-          if(this._rush.body.velocity.x === 250){
+          if(this._rush.body.velocity.x === 400){
             if(bullet.scale.x < 0){
                 bullet.scale.x *= -1;
             }
             bullet.reset(this._rush.x+50, this._rush.y+10);
-            bullet.body.velocity.x = 500;
-          } if(this._rush.body.velocity.x === -250){
+            bullet.body.velocity.x = 650;
+          } if(this._rush.body.velocity.x === -400){
 
               if(bullet.scale.x > 0){
                   bullet.scale.x *= -1;
               }
               bullet.reset(this._rush.x-50, this._rush.y+10);
-              bullet.body.velocity.x = -500;
+              bullet.body.velocity.x = -650;
           }
+
         }
+        numBalas--;
     },
 
     enemyMovement: function(){
@@ -735,6 +645,8 @@ var PlayScene = {
       this.game.world.setBounds(0,0,800,600);
       this.tilemap.destroy();
       this.tiles.destroy();
+      this.bullets.destroy();
+      this.enemies.destroy();
     }
 
 
