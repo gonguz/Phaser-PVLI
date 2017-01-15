@@ -43,7 +43,7 @@ var PreloaderScene = {
     this.loadingBar = this.game.add.sprite(100,300, 'preloader_bar');
     this.loadingBar.anchor.setTo(0, 0.5);
     this.game.load.setPreloadSprite(this.loadingBar);
-    this.game.stage.backgroundColor = "#000000";
+    this.game.stage.backgroundColor = "#000000"
 
 
 
@@ -54,6 +54,7 @@ var PreloaderScene = {
       this.game.load.image('tiles1', 'images/52088.png');
       this.game.load.image('enemy', 'images/enemy.png');
       this.game.load.image('enemyB', 'images/enemyAl.png');
+      this.game.load.image('bullets', 'images/bullet.png');
       this.game.load.image('finalEnemy', 'images/finalEnemy.png');
       this.game.load.tilemap('tilemap', 'images/map.json', null, Phaser.Tilemap.TILED_JSON);
       /*this.game.load.atlasJSONHash('rush_idle01', 'images/rush_spritesheet.png',

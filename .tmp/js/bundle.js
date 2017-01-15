@@ -125,7 +125,7 @@ var PreloaderScene = {
     this.loadingBar = this.game.add.sprite(100,300, 'preloader_bar');
     this.loadingBar.anchor.setTo(0, 0.5);
     this.game.load.setPreloadSprite(this.loadingBar);
-    this.game.stage.backgroundColor = "#000000";
+    this.game.stage.backgroundColor = "#000000"
 
 
 
@@ -136,6 +136,7 @@ var PreloaderScene = {
       this.game.load.image('tiles1', 'images/52088.png');
       this.game.load.image('enemy', 'images/enemy.png');
       this.game.load.image('enemyB', 'images/enemyAl.png');
+      this.game.load.image('bullets', 'images/bullet.png');
       this.game.load.image('finalEnemy', 'images/finalEnemy.png');
       this.game.load.tilemap('tilemap', 'images/map.json', null, Phaser.Tilemap.TILED_JSON);
       /*this.game.load.atlasJSONHash('rush_idle01', 'images/rush_spritesheet.png',
@@ -248,24 +249,36 @@ function Enemy(sprite, posX, posY, game){
   Enemy.prototype = Object.create(Phaser.Sprite.prototype);
 	Enemy.prototype.constructor = Enemy;
 
+  Enemy.prototype.setBoundaries = function(leftBound, rightBound){
+    this.rightBound = rightBound;
+    this.leftBound = leftBound;
+  };
 
-  /*Enemy.prototype.move = function(ranMin, ranMax){
-    if(this.posX === this.standingPos - ranMin){ //&& this.x < this.initialPos + max)
-        this.body.velocity.posX = this.speed;
-        if(this.scale.posX > 0)
-            this.scale.posX *= -1;
-    }
-    else if(this.posX === this.standingPos + ranMax){
-        this.body.velocity.posX = -this.speed;
-        if(this.scale.posX < 0)
-            this.scale.posX *= -1;
-    }
-  }*/
+  Enemy.prototype.setVelocity = function(velocity){
+    this.velocity = velocity;
+  };
 
+  Enemy.prototype.setLifes = function(lifes){
+    this.lifes = lifes;
+  }
+
+  Enemy.prototype.setMovement = function(){
+    if(this.body.position.x >= this.rightBound || this.body.velocity.x === 0){
+      this.body.velocity.x = -this.velocity;
+    }
+    if(this.body.position.x <= this.leftBound){
+      this.body.velocity.x = this.velocity;
+    }
+  }
+
+  var bullets;
+  var enemies;
+  var fireRate = 100;
+  var nextFire = 0;
+  var numBalas = 20;
 //Scena de juego.
 var PlayScene = {
     _rush: {}, //player
-    enemies: {}, //enemies group;
     triggers: {},
     keyPause: {},
     t1: {},
@@ -331,6 +344,13 @@ var PlayScene = {
                      Phaser.Animation.generateFrameNames('rush_jump',2,2,'',2),0,false);*/
       this.configure();
 
+      this.bullets = this.game.add.group();
+      this.bullets.enableBody = true;
+      this.bullets.physicsBodyType = Phaser.Physics.ARCADE;
+      this.bullets.createMultiple(50, 'bullets');
+      this.bullets.setAll('outOfBoundsKill', true);
+      this.bullets.setAll('checkWorldBounds', true);
+
 
       this.triggers = this.game.add.group();
       this.triggers = this.game.add.physicsGroup();
@@ -350,33 +370,45 @@ var PlayScene = {
       this.enemies.physicsBodyType = Phaser.Physics.ARCADE;
       this.enemies.enableBody = true;
 
-
-      this.enemy1 = new Enemy('enemy', 850, 3180, this);
+      this.enemy1 = this.createBaseEnemy(850, 3180, 500, 1000, 250, 0);
+      this.enemy2 = this.createBaseEnemy(2500, 3450, 2200, 2750, 250, 2);
+      this.enemy3 = this.createBaseEnemy(4900, 3250, 4700, 5100, 250, 1);
+      this.enemy4 = this.createBaseEnemy(3720, 2600, 3550, 3900, 150, 3);
+      this.enemy5 = this.createBaseEnemy(5100, 2600, 5000, 5150, 250, 4);
+      this.enemy6 = this.createBEnemy(5000, 1350, 4800, 5200, 150, 5);
+      this.enemy7 = this.createBEnemy(900, 1450, 850, 1100, 250, 2);
+      this.finalEnemy = this.createFinalEnemy(4100, 375, 3800, 4300, 250, 10);
       this.enemies.add(this.enemy1);
-
-
-      this.enemy2 = new Enemy('enemy', 2500, 3450, this);
       this.enemies.add(this.enemy2);
-
-      this.enemy3 = new Enemy('enemy', 4900, 3250, this);
       this.enemies.add(this.enemy3);
-
-      this.enemy4 = new Enemy('enemy', 3720, 2600, this);
       this.enemies.add(this.enemy4);
-
-      this.enemy5 = new Enemy('enemy', 5100, 2600, this);
       this.enemies.add(this.enemy5);
-
-      this.enemy6 = new Enemy('enemyB', 5000, 1350, this);
       this.enemies.add(this.enemy6);
-
-      this.enemy7 = new Enemy('enemyB', 900, 1450, this);
       this.enemies.add(this.enemy7);
-
-      this.finalEnemy = new Enemy('finalEnemy', 4100, 375, this);
       this.enemies.add(this.finalEnemy);
   },
 
+  createBaseEnemy: function(posX, posY, leftBound, rightBound, velocity, lifes){
+    var enemy = new Enemy('enemy', posX, posY, this);
+    return this.giveAttrToEnemy(enemy, leftBound, rightBound, velocity, lifes);
+  },
+
+  createBEnemy: function(posX, posY, leftBound, rightBound, velocity, lifes){
+    var enemy = new Enemy('enemyB', posX, posY, this);
+    return this.giveAttrToEnemy(enemy, leftBound, rightBound, velocity, lifes);
+  },
+
+  createFinalEnemy: function(posX, posY, leftBound, rightBound, velocity, lifes){
+    var enemy = new Enemy('finalEnemy', posX, posY, this);
+    return this.giveAttrToEnemy(enemy, leftBound, rightBound, velocity, lifes);
+  },
+
+  giveAttrToEnemy: function(enemy, leftBound, rightBound, velocity, lifes){
+    enemy.setBoundaries(leftBound, rightBound);
+    enemy.setVelocity(velocity);
+    enemy.setLifes(lifes);
+    return enemy;
+  },
     //IS called one per frame.
     update: function () {
         var moveDirection = new Phaser.Point(0,0);
@@ -384,25 +416,31 @@ var PlayScene = {
         var enemyWithTilemap = this.game.physics.arcade.collide(this.enemies, this.groundLayer);
         var movement = this.GetMovement();
         var enemyCollision = this.game.physics.arcade.collide(this._rush, this.enemies);
+        //var enemyWBullet = this.game.physics.arcade.collide(this.bullets, this.enemies);
 
         this.enemyMovement();
 
+        //this.game.camera.flash(0xEBEBEB, 3000);
+        console.log("VIDAS: ", this.enemy1.lifes);
 
+        if (this.game.input.activePointer.leftButton.isDown)
+        {
+          this.fire();
+          numBalas--;
+        }
+        console.log("Te quedan: ", numBalas);
         if(enemyCollision){
           this.game.state.start('gameOver');
         }
 
-        if(this.game.physics.arcade.collide(this._rush, this.t1)){
-          this._rush.reset(300, 2500);
-        }
+        this.game.physics.arcade.overlap(this.bullets, this.enemies, this.bulletCollision, null, this);
 
-        if(this.game.physics.arcade.collide(this._rush, this.t2)){
-          this._rush.reset(500, 1600);
-        }
 
-        if(this.game.physics.arcade.collide(this._rush, this.t3)){
-          this._rush.reset(200, 400);
-        }
+
+        this.triggerCollision(this.t1, 300, 2500);
+        this.triggerCollision(this.t2, 500, 1600);
+        this.triggerCollision(this.t3, 200, 400);
+
 
         if(this.game.physics.arcade.collide(this._rush, this.t4)){
           this.game.state.start('finalScene');
@@ -520,6 +558,16 @@ var PlayScene = {
       this.game.physics.arcade.isPaused = (this.game.physics.arcade.isPaused) ? false : true;
     },
 
+    bulletCollision: function(bullet, enemy){
+      if(enemy.lifes > 0){
+        enemy.lifes--;
+      }
+      else if(enemy.lifes === 0){
+        enemy.kill();
+      }
+      bullet.kill();
+    },
+
     actionOnClickResume: function(){
         this.game.world.setBounds(this._rush);
         this.pauseBackground.visible = false;
@@ -531,68 +579,38 @@ var PlayScene = {
 
     },
 
+    fire: function() {
+
+      if (this.game.time.now > nextFire && this.bullets.countDead() > 0)
+      {
+        nextFire = this.game.time.now + fireRate;
+
+        var bullet = this.bullets.getFirstDead();
+
+        if(this.game.input.keyboard.isDown(Phaser.Keyboard.D)){
+          bullet.reset(this._rush.x+50, this._rush.y+10);
+          bullet.body.velocity.x = 500;
+        } if(this.game.input.keyboard.isDown(Phaser.Keyboard.A)){
+
+            if(bullet.scale.x > 0){
+                bullet.scale.x *= -1;
+            }
+            bullet.reset(this._rush.x-50, this._rush.y+10);
+            bullet.body.velocity.x = -500;
+        }
+      }
+    },
+
     enemyMovement: function(){
+      this.enemies.children.forEach(function(enemy){
+        enemy.setMovement();
+      })
+    },
 
-      if(this.enemy1.body.position.x >= 1000 || this.enemy1.body.velocity.x === 0){
-        this.enemy1.body.velocity.x = -250;
+    triggerCollision: function(trigger, posX, posY){
+      if(this.game.physics.arcade.collide(this._rush, trigger)){
+        this._rush.reset(posX, posY);
       }
-      if(this.enemy1.body.position.x <= 500){
-        this.enemy1.body.velocity.x = 250;
-      }
-
-      if(this.enemy2.body.position.x >= 2750 || this.enemy2.body.velocity.x === 0){
-        this.enemy2.body.velocity.x = -250;
-      }
-      if(this.enemy2.body.position.x <= 2200){
-        this.enemy2.body.velocity.x = 250;
-      }
-
-      if(this.enemy3.body.position.x >= 5100 || this.enemy3.body.velocity.x === 0){
-        this.enemy3.body.velocity.x = -250;
-      }
-      if(this.enemy3.body.position.x <= 4700){
-        this.enemy3.body.velocity.x = 250;
-      }
-
-
-      if(this.enemy4.body.position.x >= 3900 || this.enemy4.body.velocity.x === 0){
-        this.enemy4.body.velocity.x = -150;
-      }
-      if(this.enemy4.body.position.x <= 3550){
-        this.enemy4.body.velocity.x = 150;
-      }
-
-      if(this.enemy5.body.position.x >= 5150 || this.enemy5.body.velocity.x === 0){
-        this.enemy5.body.velocity.x = -250;
-      }
-      if(this.enemy5.body.position.x <= 5000){
-        this.enemy5.body.velocity.x = 250;
-      }
-
-      if(this.enemy6.body.position.x >= 5200 || this.enemy6.body.velocity.x === 0){
-        this.enemy6.body.velocity.x = -150;
-      }
-      if(this.enemy6.body.position.x <= 4800){
-        this.enemy6.body.velocity.x = 150;
-      }
-
-      if(this.enemy7.body.position.x >= 1100 || this.enemy7.body.velocity.x === 0){
-        this.enemy7.body.velocity.x = -100;
-      }
-      if(this.enemy7.body.position.x <= 850){
-        this.enemy7.body.velocity.x = 100;
-      }
-
-      if(this.finalEnemy.body.position.x >= 4300 || this.finalEnemy.body.velocity.x === 0){
-        this.finalEnemy.body.velocity.x = -400;
-      }
-      if(this.finalEnemy.body.position.x <= 3800){
-        this.finalEnemy.body.velocity.x = 400;
-      }
-
-
-
-
     },
 
 
@@ -621,20 +639,17 @@ var PlayScene = {
 
     isJumping: function(collisionWithTilemap){
         return this.canJump(collisionWithTilemap) &&
-            this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR);
+            this.game.input.keyboard.isDown(Phaser.Keyboard.W);
     },
 
     GetMovement: function(){
-        var movement = Direction.NONE
-        //Move Right
-        if(this.game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)){
-            movement = Direction.RIGHT;
+        if(this.game.input.keyboard.isDown(Phaser.Keyboard.D)){
+          return Direction.RIGHT;
+        }else if(this.game.input.keyboard.isDown(Phaser.Keyboard.A)){
+          return Direction.LEFT;
+        }else{
+          return Direction.NONE;
         }
-        //Move Left
-        if(this.game.input.keyboard.isDown(Phaser.Keyboard.LEFT)){
-            movement = Direction.LEFT;
-        }
-        return movement;
     },
     //configure the scene
     configure: function(){
@@ -647,7 +662,7 @@ var PlayScene = {
         this._rush.body.bounce.y = 0.2;
         this._rush.body.gravity.y = 20000;
         this._rush.body.gravity.x = 0;
-        this._rush.body.velocity.x = 0;
+        this._rush.body.velocity.x = 200;
         this.game.camera.posX = this._rush.posX;
         this.game.camera.posY = this._rush.posY;
         this.game.camera.follow(this._rush);
