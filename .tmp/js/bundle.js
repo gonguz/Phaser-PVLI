@@ -276,9 +276,10 @@ function Enemy(sprite, posX, posY, game){
   var jumpTime = 0;
   var enemies;
   var cursors;
+  var shoot;
   var fireRate = 100;
   var nextFire = 0;
-  var numBalas = 20;
+  var numBalas = 32;
 //Scena de juego.
 var PlayScene = {
     _rush: {}, //player
@@ -347,6 +348,11 @@ var PlayScene = {
       this._rush.animations.add('jump',
                      Phaser.Animation.generateFrameNames('rush_jump',2,2,'',2),0,false);*/
       this.configure();
+
+
+
+      this.shoot = this.game.input.keyboard.addKey(Phaser.Keyboard.L);
+
 
       this.bullets = this.game.add.group();
       this.bullets.enableBody = true;
@@ -425,12 +431,17 @@ var PlayScene = {
         this.checkPlayerFell();
 
 
-        if (this.game.input.keyboard.isDown(Phaser.Keyboard.L))
+        /*if (this.game.input.keyboard.isDown(Phaser.Keyboard.L))
         {
-            this.game.camera.flash(0xEBEBEB, 150);
+            //this.game.camera.flash(0xEBEBEB, 150);
             this.fire();
-            console.log("HHH", numBalas);
+        }*/
+
+        this.shoot.onDown.add(this.fire, this);
+        if(numBalas < 0){
+          numBalas = 0;
         }
+        console.log(numBalas);
 
         if(enemyCollision){
           this.game.state.start('gameOver');
@@ -499,6 +510,10 @@ var PlayScene = {
       bullet.kill();
     },
 
+    numShoots: function(){
+      numBalas--;
+    },
+
     playerMovement: function(){
       if (this.game.input.keyboard.isDown(Phaser.Keyboard.A))
       {
@@ -533,7 +548,7 @@ var PlayScene = {
     },
 
     fire: function() {
-      if (this.game.time.now > nextFire && this.bullets.countDead() > 0)
+      if (this.game.time.now > nextFire && this.bullets.countDead() > 0 && numBalas > 0)
         {
           nextFire = this.game.time.now + fireRate;
 
@@ -553,9 +568,8 @@ var PlayScene = {
               bullet.reset(this._rush.x-50, this._rush.y+10);
               bullet.body.velocity.x = -650;
           }
-
+          this.numShoots();
         }
-        numBalas--;
     },
 
     enemyMovement: function(){
