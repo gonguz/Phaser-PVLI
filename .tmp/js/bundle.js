@@ -265,9 +265,13 @@ function Enemy(sprite, posX, posY, game){
   Enemy.prototype.setMovement = function(){
     if(this.body.position.x >= this.rightBound || this.body.velocity.x === 0){
       this.body.velocity.x = -this.velocity;
+      if(this.scale.x < 0)
+          this.scale.x *= -1;
     }
     if(this.body.position.x <= this.leftBound){
       this.body.velocity.x = this.velocity;
+      if(this.scale.x > 0)
+          this.scale.x *= -1;
     }
   }
 
@@ -280,7 +284,7 @@ function Enemy(sprite, posX, posY, game){
   var fireRate = 100;
   var nextFire = 0;
   var numBalas = 38;
-  var doubleJump;
+  var numEnemies = 8;
   //var numBalas = 32;
 //Scena de juego.
 var PlayScene = {
@@ -384,12 +388,12 @@ var PlayScene = {
       this.enemies.physicsBodyType = Phaser.Physics.ARCADE;
       this.enemies.enableBody = true;
 
-      this.enemy1 = this.createBaseEnemy(850, 3180, 500, 1000, 250, 0);
-      this.enemy2 = this.createBaseEnemy(2500, 3450, 2200, 2750, 250, 2);
-      this.enemy3 = this.createBaseEnemy(4900, 3250, 4700, 5100, 250, 1);
-      this.enemy4 = this.createBaseEnemy(3720, 2600, 3550, 3900, 150, 3);
+      this.enemy1 = this.createBaseEnemy(850, 3180, 600, 900, 250, 0);
+      this.enemy2 = this.createBaseEnemy(2500, 3450, 2300, 2650, 250, 2);
+      this.enemy3 = this.createBaseEnemy(4900, 3250, 4600, 5000, 250, 1);
+      this.enemy4 = this.createBaseEnemy(3720, 2600, 3550, 3800, 150, 3);
       this.enemy5 = this.createBaseEnemy(5100, 2600, 5000, 5150, 250, 4);
-      this.enemy6 = this.createBEnemy(5000, 1350, 4800, 5200, 150, 5);
+      this.enemy6 = this.createBEnemy(5000, 1350, 4900, 5100, 150, 5);
       this.enemy7 = this.createBEnemy(900, 1450, 850, 1100, 250, 2);
       this.finalEnemy = this.createFinalEnemy(4100, 300, 3800, 4300, 350, 10);
       this.enemies.add(this.enemy1);
@@ -442,15 +446,16 @@ var PlayScene = {
         }*/
 
         this.shoot.onDown.add(this.fire, this);
-        if(numBalas < 0){
-          numBalas = 0;
+        if(numBalas <= 0 && numEnemies !== 0){
+          this.game.state.start('gameOver');
         }
-        console.log(numBalas);
+        console.log("Balas: ", numBalas, "NumEnemies: ", numEnemies);
         //console.log("VEL: ", this._rush.body.velocity.x);
 
         if(enemyCollision){
           this.game.state.start('gameOver');
           numBalas = 38;
+          numEnemies = 8;
         }
 
         this.game.physics.arcade.overlap(this.bullets, this.enemies, this.bulletCollision, null, this);
@@ -512,6 +517,7 @@ var PlayScene = {
       }
       else if(enemy.lifes === 0){
         enemy.kill();
+        numEnemies--;
       }
       bullet.kill();
     },
@@ -604,6 +610,7 @@ var PlayScene = {
         //TODO 6 Carga de 'gameOver';
         this.game.state.start('gameOver');
         numBalas = 38;
+        numEnemies = 8;
     },
 
     checkPlayerFell: function(){
