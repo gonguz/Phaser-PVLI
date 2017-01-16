@@ -280,6 +280,8 @@ function Enemy(sprite, posX, posY, game){
   var fireRate = 100;
   var nextFire = 0;
   var numBalas = 32;
+  var doubleJump;
+  //var numBalas = 32;
 //Scena de juego.
 var PlayScene = {
     _rush: {}, //player
@@ -319,7 +321,7 @@ var PlayScene = {
 
       this.cursors = this.game.input.keyboard.createCursorKeys();
       //this.jumping = this.game.input.keyboard.addKey(Phaser.Keyboard.W);
-
+      this.numBalas = 32;
       //Creacion de las layers
       this.backgroundLayer = this.map.createLayer('BackgroundLayer');
       this.groundLayer = this.map.createLayer('GroundLayer');
@@ -337,6 +339,8 @@ var PlayScene = {
       this.backgroundLayer.setScale(3,3);
       this.death.setScale(3,3);
       this.teleport.setScale(3,3);
+
+      //this.numBalas = 2;
 
       this.groundLayer.resizeWorld(); //resize world and adjust to the screen
 
@@ -445,6 +449,7 @@ var PlayScene = {
 
         if(enemyCollision){
           this.game.state.start('gameOver');
+          numBalas = 32;
         }
 
         this.game.physics.arcade.overlap(this.bullets, this.enemies, this.bulletCollision, null, this);
@@ -597,6 +602,7 @@ var PlayScene = {
     onPlayerFell: function(){
         //TODO 6 Carga de 'gameOver';
         this.game.state.start('gameOver');
+        numBalas = 32;
     },
 
     checkPlayerFell: function(){
@@ -629,7 +635,6 @@ var PlayScene = {
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         this.game.stage.backgroundColor = '#a9f0ff';
         this.game.physics.arcade.enable(this._rush);
-
         this._rush.body.bounce.y = 0.2;
         this._rush.body.gravity.y = 2000;
         this._rush.body.gravity.x = 0;
