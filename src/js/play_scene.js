@@ -47,7 +47,7 @@ function Enemy(sprite, posX, posY, game){
   var shoot;
   var fireRate = 100;
   var nextFire = 0;
-  var numBalas = 32;
+  var numBalas = 38;
   var doubleJump;
   //var numBalas = 32;
 //Scena de juego.
@@ -97,7 +97,7 @@ var PlayScene = {
       this.death = this.map.createLayer('Death');
       this.teleport = this.map.createLayer('Teleport');
       //this._rush = this.game.add.sprite(100,3000, 'rush_idle01');
-      this._rush = this.game.add.sprite(300,3100, 'rush_idle01');
+      this._rush = this.game.add.sprite(300, 3100, 'rush_idle01');
       //Colisiones con el plano de muerte y con el plano de muerte y con suelo.
       this.map.setCollisionBetween(1, 5000, true, 'Death');
       this.map.setCollisionBetween(1, 5000, true, 'GroundLayer');
@@ -140,7 +140,7 @@ var PlayScene = {
       this.triggers.physicsBodyType = Phaser.Physics.ARCADE;
       this.t1 = this.triggers.create(5350,3500, 'trigger');//OK
       this.t2 = this.triggers.create(5500, 2300, 'trigger');//OK
-      this.t3 = this.triggers.create(5400, 1500, 'trigger');
+      this.t3 = this.triggers.create(500, 1600, 'trigger');
       this.t4 = this.triggers.create(5600, 550, 'trigger');// OK
       this.triggers.setAll('body.immovable', true);
       this.triggers.setAll('alpha', 0);
@@ -159,7 +159,7 @@ var PlayScene = {
       this.enemy5 = this.createBaseEnemy(5100, 2600, 5000, 5150, 250, 4);
       this.enemy6 = this.createBEnemy(5000, 1350, 4800, 5200, 150, 5);
       this.enemy7 = this.createBEnemy(900, 1450, 850, 1100, 250, 2);
-      this.finalEnemy = this.createFinalEnemy(4100, 375, 3800, 4300, 250, 10);
+      this.finalEnemy = this.createFinalEnemy(4100, 300, 3800, 4300, 350, 10);
       this.enemies.add(this.enemy1);
       this.enemies.add(this.enemy2);
       this.enemies.add(this.enemy3);
@@ -214,10 +214,11 @@ var PlayScene = {
           numBalas = 0;
         }
         console.log(numBalas);
+        //console.log("VEL: ", this._rush.body.velocity.x);
 
         if(enemyCollision){
           this.game.state.start('gameOver');
-          numBalas = 32;
+          numBalas = 38;
         }
 
         this.game.physics.arcade.overlap(this.bullets, this.enemies, this.bulletCollision, null, this);
@@ -225,7 +226,7 @@ var PlayScene = {
 
 
         this.triggerCollision(this.t1, 300, 2500);
-        this.triggerCollision(this.t2, 500, 1600);
+        this.triggerCollision(this.t2, 5400, 1500 );
         this.triggerCollision(this.t3, 200, 400);
 
 
@@ -304,7 +305,7 @@ var PlayScene = {
 
 
       if( this.game.input.keyboard.isDown(Phaser.Keyboard.W) && this._rush.body.onFloor() ) {
-        this._rush.body.velocity.y = -850;
+        this._rush.body.velocity.y = -750;
       }
     },
 
@@ -370,7 +371,7 @@ var PlayScene = {
     onPlayerFell: function(){
         //TODO 6 Carga de 'gameOver';
         this.game.state.start('gameOver');
-        numBalas = 32;
+        numBalas = 38;
     },
 
     checkPlayerFell: function(){
@@ -406,7 +407,7 @@ var PlayScene = {
         this._rush.body.bounce.y = 0.2;
         this._rush.body.gravity.y = 2000;
         this._rush.body.gravity.x = 0;
-        this._rush.body.velocity.x = 200;
+        this._rush.body.velocity.x = 400;
         this.game.camera.posX = this._rush.posX;
         this.game.camera.posY = this._rush.posY;
         this.game.camera.follow(this._rush);
