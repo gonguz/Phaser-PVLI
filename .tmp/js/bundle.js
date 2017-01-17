@@ -287,7 +287,7 @@ function Enemy(sprite, posX, posY, game){
   var paused = false;
   var fireRate = 100;
   var nextFire = 0;
-  var numBalas = 38;
+  var numBalas = 43;
   var numEnemies = 8;
   //var numBalas = 32;
 //Scena de juego.
@@ -351,7 +351,7 @@ var PlayScene = {
 
       this.groundLayer.resizeWorld(); //resize world and adjust to the screen
 
-      ammoText = this.game.add.text(100, 1000, 'Balas Restantes = 38', { fontSize: '16px', fill: '#FFFFFF' });
+      ammoText = this.game.add.text(100, 1000, 'Balas Restantes = 43', { fontSize: '16px', fill: '#FFFFFF' });
   	  ammoText.fixedToCamera=true;
   	  ammoText.cameraOffset.setTo(10,10);
 
@@ -400,9 +400,9 @@ var PlayScene = {
       this.enemy3 = this.createBaseEnemy(4900, 3250, 4600, 5000, 250, 1);
       this.enemy4 = this.createBaseEnemy(3720, 2600, 3550, 3800, 150, 3);
       this.enemy5 = this.createBaseEnemy(5100, 2600, 5000, 5150, 150, 4);
-      this.enemy6 = this.createBEnemy(5000, 1350, 4900, 5100, 150, 5);
-      this.enemy7 = this.createBEnemy(1000, 1350, 850, 1100, 250, 2);
-      this.finalEnemy = this.createFinalEnemy(4100, 300, 3800, 4300, 350, 10);
+      this.enemy6 = this.createBEnemy(5000, 1350, 4900, 5100, 150, 3);
+      this.enemy7 = this.createBEnemy(1000, 1350, 950, 1050, 150, 2);
+      this.finalEnemy = this.createFinalEnemy(4100, 300, 3800, 4300, 200, 8);
       this.enemies.add(this.enemy1);
       this.enemies.add(this.enemy2);
       this.enemies.add(this.enemy3);
@@ -461,6 +461,8 @@ var PlayScene = {
           tiempoStop++;
           if(tiempoStop === 120){
             this.game.state.start('gameOver');
+            numBalas = 43;
+            numEnemies = 8;
           }
 
         }
@@ -469,15 +471,17 @@ var PlayScene = {
 
         this.shoot.onDown.add(this.fire, this);
 
-        if(numBalas <= 0 && numEnemies !== 0){
+        if(numBalas === 0 && numEnemies !== 0){
           this.game.state.start('gameOver');
+          numBalas = 43;
+          numEnemies = 8;
         }
         console.log("Balas: ", numBalas, "NumEnemies: ", numEnemies);
         //console.log("VEL: ", this._rush.body.velocity.x);
 
         if(enemyCollision){
           this.game.state.start('gameOver');
-          numBalas = 38;
+          numBalas = 43;
           numEnemies = 8;
         }
 
@@ -486,8 +490,8 @@ var PlayScene = {
 
 
         this.triggerCollision(this.t1, 300, 2500, 400);
-        this.triggerCollision(this.t2, 5400, 1500, -400);
-        this.triggerCollision(this.t3, 200, 400, 400);
+        this.triggerCollision(this.t2, 5600, 1500, 400);
+        this.triggerCollision(this.t3, 100, 300, 400);
 
 
         if(this.game.physics.arcade.collide(this._rush, this.t4)){
@@ -650,7 +654,7 @@ var PlayScene = {
     onPlayerFell: function(){
         //TODO 6 Carga de 'gameOver';
         this.game.state.start('gameOver');
-        numBalas = 38;
+        numBalas = 43;
         numEnemies = 8;
     },
 
