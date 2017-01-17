@@ -281,6 +281,8 @@ function Enemy(sprite, posX, posY, game){
   var enemies;
   var cursors;
   var shoot;
+  var ammoText;
+  var paused = false;
   var fireRate = 100;
   var nextFire = 0;
   var numBalas = 38;
@@ -325,7 +327,6 @@ var PlayScene = {
 
       this.cursors = this.game.input.keyboard.createCursorKeys();
       //this.jumping = this.game.input.keyboard.addKey(Phaser.Keyboard.W);
-      this.numBalas = 32;
       //Creacion de las layers
       this.backgroundLayer = this.map.createLayer('BackgroundLayer');
       this.groundLayer = this.map.createLayer('GroundLayer');
@@ -347,6 +348,10 @@ var PlayScene = {
       //this.numBalas = 2;
 
       this.groundLayer.resizeWorld(); //resize world and adjust to the screen
+
+      ammoText = this.game.add.text(16, 1000, 'Balas Restantes = 38', { fontSize: '32px', fill: '#000' });
+  	  ammoText.fixedToCamera=true;
+  	  ammoText.cameraOffset.setTo(10,10);
 
       //nombre de la animación, frames, framerate, isloop
       /*this._rush.animations.add('run',
@@ -444,8 +449,14 @@ var PlayScene = {
             //this.game.camera.flash(0xEBEBEB, 150);
             this.fire();
         }*/
+        /*if(!this.paused){
+          if(this.shoot.isDown){
+              this.shoot.onDown.add(this.fire, this);
+          }
+        }*/
 
         this.shoot.onDown.add(this.fire, this);
+
         if(numBalas <= 0 && numEnemies !== 0){
           this.game.state.start('gameOver');
         }
@@ -462,9 +473,9 @@ var PlayScene = {
 
 
 
-        this.triggerCollision(this.t1, 300, 2500);
-        this.triggerCollision(this.t2, 5400, 1500 );
-        this.triggerCollision(this.t3, 200, 400);
+        this.triggerCollision(this.t1, 300, 2500, 400);
+        this.triggerCollision(this.t2, 5400, 1500, -400);
+        this.triggerCollision(this.t3, 200, 400, 400);
 
 
         if(this.game.physics.arcade.collide(this._rush, this.t4)){
@@ -473,12 +484,19 @@ var PlayScene = {
 
 
 
-        if(this.game.input.keyboard.isDown(Phaser.Keyboard.P)){
+        /*if(this.game.input.keyboard.isDown(Phaser.Keyboard.P)){
           game.paused = true;
-        }
+        }*/
 
         this.keyPause = this.game.input.keyboard.addKey(Phaser.Keyboard.P);
-        this.keyPause.onDown.add(this.pausedMenu,this);
+
+        if(!this.paused){
+          if(this.keyPause.isDown){
+            this.paused = true;
+            this.pausedMenu();
+          }
+        }
+        //this.keyPause.onDown.add(this.pausedMenu,this);
     },
 
     pausedMenu: function(){
@@ -508,7 +526,7 @@ var PlayScene = {
                                              this.game.world.centerY * 1.35, 'pauseIcon');
 
 
-      this.game.physics.arcade.isPaused = (this.game.physics.arcade.isPaused) ? false : true;
+      this.game.physics.arcade.isPaused = true;
     },
 
     bulletCollision: function(bullet, enemy){
@@ -524,6 +542,7 @@ var PlayScene = {
 
     numShoots: function(){
       numBalas--;
+      ammoText.text = 'Balas Restantes = ' + numBalas;
     },
 
     playerMovement: function(){
@@ -554,34 +573,40 @@ var PlayScene = {
         this.buttonMenu.visible = false;
         this.buttonResume.visible = false;
         this.pauseIcon.visible = false;
-        this._rush.body.velocity.x = 0;
-        this.game.physics.arcade.isPaused = (this.game.physics.arcade.isPaused) ? false : true;
+        this._rush.body.velocity.x = 400;
+        this.paused = false;
+        this.game.physics.arcade.isPaused = false;
 
     },
 
     fire: function() {
-      if (this.game.time.now > nextFire && this.bullets.countDead() > 0 && numBalas > 0)
-        {
-          nextFire = this.game.time.now + fireRate;
 
-          var bullet = this.bullets.getFirstDead();
+      if(!this.paused){
+        if(this.shoot.isDown){
+          if (this.game.time.now > nextFire && this.bullets.countDead() > 0 && numBalas > 0)
+            {
+              nextFire = this.game.time.now + fireRate;
 
-          if(this._rush.body.velocity.x === 400){
-            if(bullet.scale.x < 0){
-                bullet.scale.x *= -1;
-            }
-            bullet.reset(this._rush.x+50, this._rush.y+10);
-            bullet.body.velocity.x = 650;
-          } if(this._rush.body.velocity.x === -400){
+              var bullet = this.bullets.getFirstDead();
 
-              if(bullet.scale.x > 0){
-                  bullet.scale.x *= -1;
+              if(this._rush.body.velocity.x === 400){
+                if(bullet.scale.x < 0){
+                    bullet.scale.x *= -1;
+                }
+                bullet.reset(this._rush.x+50, this._rush.y+10);
+                bullet.body.velocity.x = 650;
+              } if(this._rush.body.velocity.x === -400){
+
+                  if(bullet.scale.x > 0){
+                      bullet.scale.x *= -1;
+                  }
+                  bullet.reset(this._rush.x-50, this._rush.y+10);
+                  bullet.body.velocity.x = -650;
               }
-              bullet.reset(this._rush.x-50, this._rush.y+10);
-              bullet.body.velocity.x = -650;
-          }
-          this.numShoots();
+              this.numShoots();
+            }
         }
+      }
     },
 
     enemyMovement: function(){
@@ -590,9 +615,10 @@ var PlayScene = {
       })
     },
 
-    triggerCollision: function(trigger, posX, posY){
+    triggerCollision: function(trigger, posX, posY, impulse){
       if(this.game.physics.arcade.collide(this._rush, trigger)){
         this._rush.reset(posX, posY);
+        this._rush.body.velocity.x = impulse;
       }
     },
 
