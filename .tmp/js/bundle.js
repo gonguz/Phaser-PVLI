@@ -349,7 +349,7 @@ var PlayScene = {
 
       this.groundLayer.resizeWorld(); //resize world and adjust to the screen
 
-      ammoText = this.game.add.text(16, 1000, 'Balas Restantes = 38', { fontSize: '32px', fill: '#000' });
+      ammoText = this.game.add.text(100, 1000, 'Balas Restantes = 38', { fontSize: '16px', fill: '#FFFFFF' });
   	  ammoText.fixedToCamera=true;
   	  ammoText.cameraOffset.setTo(10,10);
 
@@ -397,9 +397,9 @@ var PlayScene = {
       this.enemy2 = this.createBaseEnemy(2500, 3450, 2300, 2650, 250, 2);
       this.enemy3 = this.createBaseEnemy(4900, 3250, 4600, 5000, 250, 1);
       this.enemy4 = this.createBaseEnemy(3720, 2600, 3550, 3800, 150, 3);
-      this.enemy5 = this.createBaseEnemy(5100, 2600, 5000, 5150, 250, 4);
+      this.enemy5 = this.createBaseEnemy(5100, 2600, 5000, 5150, 150, 4);
       this.enemy6 = this.createBEnemy(5000, 1350, 4900, 5100, 150, 5);
-      this.enemy7 = this.createBEnemy(900, 1450, 850, 1100, 250, 2);
+      this.enemy7 = this.createBEnemy(1000, 1350, 850, 1100, 250, 2);
       this.finalEnemy = this.createFinalEnemy(4100, 300, 3800, 4300, 350, 10);
       this.enemies.add(this.enemy1);
       this.enemies.add(this.enemy2);
@@ -536,6 +536,7 @@ var PlayScene = {
       else if(enemy.lifes === 0){
         enemy.kill();
         numEnemies--;
+        this.game.camera.flash(0xEBEBEB, 150);
       }
       bullet.kill();
     },
