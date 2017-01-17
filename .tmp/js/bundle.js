@@ -238,6 +238,7 @@ var PlayerState = {'JUMP':0, 'RUN':1, 'FALLING':2, 'STOP':3}
 var Direction = {'LEFT':0, 'RIGHT':1, 'NONE':3}
 
 
+
 function Enemy(sprite, posX, posY, game){
   Phaser.Sprite.call(this, game, posX, posY, sprite);
   //Phaser.Sprite.call(this, game, posX, posY, 'enemyB');
@@ -282,6 +283,7 @@ function Enemy(sprite, posX, posY, game){
   var cursors;
   var shoot;
   var ammoText;
+  var tiempoStop = 0;
   var paused = false;
   var fireRate = 100;
   var nextFire = 0;
@@ -393,7 +395,7 @@ var PlayScene = {
       this.enemies.physicsBodyType = Phaser.Physics.ARCADE;
       this.enemies.enableBody = true;
 
-      this.enemy1 = this.createBaseEnemy(850, 3180, 600, 900, 250, 0);
+      this.enemy1 = this.createBaseEnemy(850, 3180, 600, 900, 150, 0);
       this.enemy2 = this.createBaseEnemy(2500, 3450, 2300, 2650, 250, 2);
       this.enemy3 = this.createBaseEnemy(4900, 3250, 4600, 5000, 250, 1);
       this.enemy4 = this.createBaseEnemy(3720, 2600, 3550, 3800, 150, 3);
@@ -454,6 +456,16 @@ var PlayScene = {
               this.shoot.onDown.add(this.fire, this);
           }
         }*/
+
+        if(this._rush.body.velocity.x === 0){
+          tiempoStop++;
+          if(tiempoStop === 120){
+            this.game.state.start('gameOver');
+          }
+
+        }
+
+        console.log("Vel: ", this._rush.body.velocity.x, "Tiempo: ", tiempoStop);
 
         this.shoot.onDown.add(this.fire, this);
 
@@ -550,6 +562,7 @@ var PlayScene = {
       if (this.game.input.keyboard.isDown(Phaser.Keyboard.A))
       {
         this._rush.body.velocity.x = -400;
+        tiempoStop = 0
           if(this._rush.scale.x > 0)
               this._rush.scale.x *= -1;
       }
@@ -557,6 +570,7 @@ var PlayScene = {
       else if (this.game.input.keyboard.isDown(Phaser.Keyboard.D))
       {
         this._rush.body.velocity.x = 400;
+        tiempoStop = 0;
           if(this._rush.scale.x < 0)
               this._rush.scale.x *= -1;
       }
@@ -594,14 +608,14 @@ var PlayScene = {
                 if(bullet.scale.x < 0){
                     bullet.scale.x *= -1;
                 }
-                bullet.reset(this._rush.x+50, this._rush.y+10);
+                bullet.reset(this._rush.x+35, this._rush.y+10);
                 bullet.body.velocity.x = 650;
               } if(this._rush.body.velocity.x === -400){
 
                   if(bullet.scale.x > 0){
                       bullet.scale.x *= -1;
                   }
-                  bullet.reset(this._rush.x-50, this._rush.y+10);
+                  bullet.reset(this._rush.x-35, this._rush.y+10);
                   bullet.body.velocity.x = -650;
               }
               this.numShoots();
@@ -674,6 +688,7 @@ var PlayScene = {
         this._rush.body.gravity.y = 2000;
         this._rush.body.gravity.x = 0;
         this._rush.body.velocity.x = 400;
+        tiempoStop = 0;
         this.game.camera.posX = this._rush.posX;
         this.game.camera.posY = this._rush.posY;
         this.game.camera.follow(this._rush);
