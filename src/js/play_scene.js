@@ -212,6 +212,7 @@ var PlayScene = {
         this.enemyMovement();
         this.playerMovement();
         this.checkPlayerFell();
+        this.checkStand();
 
 
         /*if (this.game.input.keyboard.isDown(Phaser.Keyboard.L))
@@ -225,15 +226,6 @@ var PlayScene = {
           }
         }*/
 
-        if(this._rush.body.velocity.x === 0){
-          tiempoStop++;
-          if(tiempoStop === 120){
-            this.game.state.start('gameOver');
-            numBalas = 43;
-            numEnemies = 8;
-          }
-
-        }
 
         console.log("Vel: ", this._rush.body.velocity.x, "Tiempo: ", tiempoStop);
 
@@ -264,6 +256,8 @@ var PlayScene = {
 
         if(this.game.physics.arcade.collide(this._rush, this.t4)){
           this.game.state.start('finalScene');
+          numBalas = 43;
+          numEnemies = 8;
         }
 
 
@@ -392,6 +386,20 @@ var PlayScene = {
               }
               this.numShoots();
             }
+        }
+      }
+    },
+
+    checkStand: function(){
+
+      if(!this.paused){
+        if(this._rush.body.velocity.x === 0){
+          tiempoStop++;
+          if(tiempoStop === 120){
+            this.game.state.start('gameOver');
+            numBalas = 43;
+            numEnemies = 8;
+          }
         }
       }
     },
