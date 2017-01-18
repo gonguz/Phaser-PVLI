@@ -66,9 +66,10 @@ var PreloaderScene = {
       this.game.load.image('bullets', 'images/bullet.png');
       this.game.load.image('finalEnemy', 'images/finalEnemy.png');
       this.game.load.tilemap('tilemap', 'images/map.json', null, Phaser.Tilemap.TILED_JSON);
+      //this.game.load.spritesheet('pj1', 'images/pj1.png', 37, 45, 4);
       /*this.game.load.atlasJSONHash('rush_idle01', 'images/rush_spritesheet.png',
       'images/rush_spritesheet.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);*/
-      this.game.load.image('rush_idle01', 'images/rush_spritesheet.png');
+      this.game.load.spritesheet('rush_idle01', 'images/rush_spritesheet.png', 41, 66, 9);
 
     this.load.onLoadComplete.add(this.loadComplete, this);
 

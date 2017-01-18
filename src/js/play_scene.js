@@ -134,6 +134,11 @@ var PlayScene = {
 
       //this.numBalas = 2;
 
+      this._rush.animations.add('run', [0,1,2,3], 7, true);
+      this._rush.animations.add('idle', [8], 3, true);
+      this._rush.animations.add('shoot', [6, 0, 1, 2, 3], 7, true);
+      this._rush.animations.add('jump', [7], 7, false);
+
       this.groundLayer.resizeWorld(); //resize world and adjust to the screen
 
       ammoText = this.game.add.text(100, 1000, 'Balas Restantes = 43', { fontSize: '16px', fill: '#FFFFFF' });
@@ -244,7 +249,8 @@ var PlayScene = {
         }*/
 
 
-        console.log("Vel: ", this._rush.body.velocity.x, "Tiempo: ", tiempoStop);
+
+        //console.log("Vel: ", this._rush.body.velocity.x, "Tiempo: ", tiempoStop);
 
         this.shoot.onDown.add(this.fire, this);
 
@@ -255,7 +261,7 @@ var PlayScene = {
           this.stopMusic(this.inGameAudio);
           this.playMusic(this.gameOverAudio);
         }
-        console.log("Balas: ", numBalas, "NumEnemies: ", numEnemies);
+        //console.log("Balas: ", numBalas, "NumEnemies: ", numEnemies);
         //console.log("VEL: ", this._rush.body.velocity.x);
 
         if(enemyCollision){
@@ -354,21 +360,27 @@ var PlayScene = {
       {
         this._rush.body.velocity.x = -400;
         tiempoStop = 0
-          if(this._rush.scale.x > 0)
+          if(this._rush.scale.x > 0){
               this._rush.scale.x *= -1;
+            }
+            this._rush.animations.play('run');
       }
 
       else if (this.game.input.keyboard.isDown(Phaser.Keyboard.D))
       {
         this._rush.body.velocity.x = 400;
         tiempoStop = 0;
-          if(this._rush.scale.x < 0)
+          if(this._rush.scale.x < 0){
               this._rush.scale.x *= -1;
+            }
+          this._rush.animations.play('run');
       }
 
 
       if( this.game.input.keyboard.isDown(Phaser.Keyboard.W) && this._rush.body.onFloor() ) {
         this._rush.body.velocity.y = -750;
+        this._rush.animations.play('jump');
+
       }
     },
 
@@ -389,7 +401,6 @@ var PlayScene = {
     },
 
     fire: function() {
-
       if(!this.paused){
         if(this.shoot.isDown){
           if (this.game.time.now > nextFire && this.bullets.countDead() > 0 && numBalas > 0)
@@ -413,9 +424,13 @@ var PlayScene = {
                   bullet.body.velocity.x = -650;
               }
               this.numShoots();
+
             }
 
           this.playMusic(this.shootAudio);
+          this._rush.animations.play('shoot');
+
+
         }
       }
     },
@@ -432,6 +447,7 @@ var PlayScene = {
             this.stopMusic(this.inGameAudio);
             this.playMusic(this.gameOverAudio);
           }
+          this._rush.animations.play('idle');
         }
       }
     },
@@ -447,6 +463,7 @@ var PlayScene = {
         this._rush.reset(posX, posY);
         this._rush.body.velocity.x = impulse;
         this.playMusic(this.teleportAudio);
+        this._rush.animations.play('run');
       }
     },
 
@@ -532,6 +549,7 @@ var PlayScene = {
         this.game.camera.posX = this._rush.posX;
         this.game.camera.posY = this._rush.posY;
         this.game.camera.follow(this._rush);
+        this._rush.animations.play('run');
 
     },
     //move the player
