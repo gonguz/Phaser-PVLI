@@ -1,6 +1,5 @@
 var GameOver = {
     create: function () {
-
         this.game.stage.backgroundColor = "#000000";
         this.game.world.setBounds(0,0,800,600);
         var gameOverImage = this.game.add.sprite(this.game.world.centerX, this.game.world.centerY/3,

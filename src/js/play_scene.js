@@ -53,7 +53,7 @@ function Enemy(sprite, posX, posY, game){
   var ammoText;
   var tiempoStop = 0;
   var paused = false;
-  var fireRate = 100;
+  var fireRate = 200;
   var nextFire = 0;
   var numBalas = 43;
   var numEnemies = 8;
@@ -114,6 +114,21 @@ var PlayScene = {
       this.backgroundLayer.setScale(3,3);
       this.death.setScale(3,3);
       this.teleport.setScale(3,3);
+
+      this.menuAudio = this.game.add.audio('menu');
+      this.inGameAudio = this.game.add.audio('inGame');
+      this.inGameAudio.volume = 0.5;
+      this.shootAudio = this.game.add.audio('shoot');
+      this.teleportAudio = this.game.add.audio('teleport');
+      this.pausaAudio = this.game.add.audio('pausa');
+      this.gameOverAudio = this.game.add.audio('gameOver');
+      this.endSong = this.game.add.audio('endSong');
+
+      this.inGameAudio.play();
+      this.stopMusic(this.endSong);
+      //this.stopMusic(this.endSong);
+      //this.stopMusic(this.gameOverAudio);
+      //this.shootAudio.loop = true;
 
       //this.numBalas = 2;
 
@@ -213,8 +228,7 @@ var PlayScene = {
         this.playerMovement();
         this.checkPlayerFell();
         this.checkStand();
-
-
+        this.inGameAudio.loop = true;
         /*if (this.game.input.keyboard.isDown(Phaser.Keyboard.L))
         {
             //this.game.camera.flash(0xEBEBEB, 150);
@@ -235,6 +249,8 @@ var PlayScene = {
           this.game.state.start('gameOver');
           numBalas = 43;
           numEnemies = 8;
+          this.stopMusic(this.inGameAudio);
+          this.playMusic(this.gameOverAudio);
         }
         console.log("Balas: ", numBalas, "NumEnemies: ", numEnemies);
         //console.log("VEL: ", this._rush.body.velocity.x);
@@ -243,6 +259,8 @@ var PlayScene = {
           this.game.state.start('gameOver');
           numBalas = 43;
           numEnemies = 8;
+          this.stopMusic(this.inGameAudio);
+          this.playMusic(this.gameOverAudio);
         }
 
         this.game.physics.arcade.overlap(this.bullets, this.enemies, this.bulletCollision, null, this);
@@ -258,6 +276,8 @@ var PlayScene = {
           this.game.state.start('finalScene');
           numBalas = 43;
           numEnemies = 8;
+          this.stopMusic(this.inGameAudio);
+          this.playMusic(this.endSong);
         }
 
 
@@ -272,6 +292,7 @@ var PlayScene = {
           if(this.keyPause.isDown){
             this.paused = true;
             this.pausedMenu();
+            this.pauseMusic(this.inGameAudio);
           }
         }
         //this.keyPause.onDown.add(this.pausedMenu,this);
@@ -357,6 +378,7 @@ var PlayScene = {
         this._rush.body.velocity.x = 400;
         this.paused = false;
         this.game.physics.arcade.isPaused = false;
+        this.resumeMusic(this.inGameAudio);
 
     },
 
@@ -386,6 +408,8 @@ var PlayScene = {
               }
               this.numShoots();
             }
+
+          this.playMusic(this.shootAudio);
         }
       }
     },
@@ -399,6 +423,8 @@ var PlayScene = {
             this.game.state.start('gameOver');
             numBalas = 43;
             numEnemies = 8;
+            this.stopMusic(this.inGameAudio);
+            this.playMusic(this.gameOverAudio);
           }
         }
       }
@@ -414,12 +440,14 @@ var PlayScene = {
       if(this.game.physics.arcade.collide(this._rush, trigger)){
         this._rush.reset(posX, posY);
         this._rush.body.velocity.x = impulse;
+        this.playMusic(this.teleportAudio);
       }
     },
 
 
     returnToMenu: function(){
       this.game.state.start('menu');
+      this.playMusic(this.menuAudio);
     },
 
 
@@ -432,11 +460,36 @@ var PlayScene = {
         this.game.state.start('gameOver');
         numBalas = 43;
         numEnemies = 8;
+        this.inGameAudio.stop();
     },
 
     checkPlayerFell: function(){
         if(this.game.physics.arcade.collide(this._rush, this.death))
             this.onPlayerFell();
+    },
+
+    playMusic: function(audio){
+      if(!audio.isPlaying){
+        audio.play();
+      }
+    },
+
+    stopMusic: function(audio){
+      if(audio.isPlaying){
+        audio.stop();
+      }
+    },
+
+    pauseMusic: function(audio){
+      if(audio.isPlaying){
+        audio.pause();
+      }
+    },
+
+    resumeMusic: function(audio){
+      if(!audio.isPlaying){
+        audio.resume();
+      }
     },
 
     /*isStanding: function(){
@@ -472,6 +525,7 @@ var PlayScene = {
         this.game.camera.posX = this._rush.posX;
         this.game.camera.posY = this._rush.posY;
         this.game.camera.follow(this._rush);
+
     },
     //move the player
     movement: function(point, xMin, xMax){

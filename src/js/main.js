@@ -29,11 +29,19 @@ var BootScene = {
     this.game.load.image('pauseIcon', 'images/pauseIcon.png');
     this.game.load.image('finalBackground', 'images/finalBackground.png');
     this.game.load.image('finalText', 'images/finalText.png');
+    this.game.load.audio('menu', 'sounds/menu.mp3');
+    this.game.load.audio('inGame', 'sounds/inGame.mp3');
+    this.game.load.audio('shoot', 'sounds/shoot.mp3');
+    this.game.load.audio('teleport', 'sounds/teleport.mp3');
+    this.game.load.audio('pausa', 'sounds/pausa.mp3');
+    this.game.load.audio('gameOver', 'sounds/gameOver.mp3');
+    this.game.load.audio('endSong', 'sounds/endSong.mp3');
   },
 
   create: function () {
       //this.game.state.start('preloader');
       this.game.state.start('menu');
+
   }
 };
 
