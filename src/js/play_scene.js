@@ -382,6 +382,9 @@ var PlayScene = {
         this._rush.animations.play('jump');
 
       }
+      else if(this._rush.body.onFloor()){
+        this._rush.animations.play('run');
+      }
     },
 
     actionOnClickResume: function(){
