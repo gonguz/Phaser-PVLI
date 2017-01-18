@@ -122,8 +122,9 @@ var BootScene = {
   create: function () {
       //this.game.state.start('preloader');
       this.game.state.start('menu');
-
   }
+
+
 };
 
 
@@ -209,8 +210,8 @@ window.onload = function () {
 },{"./final_scene.js":1,"./gameover_scene.js":2,"./menu_scene.js":4,"./play_scene.js":5}],4:[function(require,module,exports){
 var MenuScene = {
     create: function () {
-
         this.game.world.setBounds(0,0,800,600);
+
 
         var starsBackground = this.game.add.sprite(this.game.world.centerX,
                                         this.game.world.centerY,
@@ -292,7 +293,7 @@ function Enemy(sprite, posX, posY, game){
   var ammoText;
   var tiempoStop = 0;
   var paused = false;
-  var fireRate = 200;
+  var fireRate = 150;
   var nextFire = 0;
   var numBalas = 43;
   var numEnemies = 8;
@@ -343,7 +344,7 @@ var PlayScene = {
       this.death = this.map.createLayer('Death');
       this.teleport = this.map.createLayer('Teleport');
       //this._rush = this.game.add.sprite(100,3000, 'rush_idle01');
-      this._rush = this.game.add.sprite(4400, 300, 'rush_idle01');
+      this._rush = this.game.add.sprite(300, 3100, 'rush_idle01');
       //Colisiones con el plano de muerte y con el plano de muerte y con suelo.
       this.map.setCollisionBetween(1, 5000, true, 'Death');
       this.map.setCollisionBetween(1, 5000, true, 'GroundLayer');
@@ -358,6 +359,7 @@ var PlayScene = {
       this.inGameAudio = this.game.add.audio('inGame');
       this.inGameAudio.volume = 0.5;
       this.shootAudio = this.game.add.audio('shoot');
+      this.shootAudio.volume = 0.3;
       this.teleportAudio = this.game.add.audio('teleport');
       this.pausaAudio = this.game.add.audio('pausa');
       this.gameOverAudio = this.game.add.audio('gameOver');
@@ -365,6 +367,7 @@ var PlayScene = {
 
       this.inGameAudio.play();
       this.stopMusic(this.endSong);
+      this.stopMusic(this.menuAudio);
       //this.stopMusic(this.endSong);
       //this.stopMusic(this.gameOverAudio);
       //this.shootAudio.loop = true;
@@ -468,6 +471,7 @@ var PlayScene = {
         this.checkPlayerFell();
         this.checkStand();
         this.inGameAudio.loop = true;
+
         /*if (this.game.input.keyboard.isDown(Phaser.Keyboard.L))
         {
             //this.game.camera.flash(0xEBEBEB, 150);
@@ -532,6 +536,7 @@ var PlayScene = {
             this.paused = true;
             this.pausedMenu();
             this.pauseMusic(this.inGameAudio);
+            this.pausaAudio.play();
           }
         }
         //this.keyPause.onDown.add(this.pausedMenu,this);
@@ -614,10 +619,12 @@ var PlayScene = {
         this.buttonMenu.visible = false;
         this.buttonResume.visible = false;
         this.pauseIcon.visible = false;
-        this._rush.body.velocity.x = 400;
+        this._rush.body.velocity.x = 100;
         this.paused = false;
         this.game.physics.arcade.isPaused = false;
         this.resumeMusic(this.inGameAudio);
+        this.stopMusic(this.pausaAudio);
+        this.stopMusic(this.menuAudio);
 
     },
 
@@ -699,7 +706,8 @@ var PlayScene = {
         this.game.state.start('gameOver');
         numBalas = 43;
         numEnemies = 8;
-        this.inGameAudio.stop();
+        this.stopMusic(this.inGameAudio);
+        this.playMusic(this.gameOverAudio);
     },
 
     checkPlayerFell: function(){

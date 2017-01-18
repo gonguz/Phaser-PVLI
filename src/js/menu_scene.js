@@ -1,7 +1,7 @@
 var MenuScene = {
     create: function () {
-
         this.game.world.setBounds(0,0,800,600);
+
 
         var starsBackground = this.game.add.sprite(this.game.world.centerX,
                                         this.game.world.centerY,
