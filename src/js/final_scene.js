@@ -1,7 +1,10 @@
 var finalScene = {
+  endMusic: {},
   create: function(){
     this.game.world.setBounds(0,0,800,600);
 
+    this.endMusic = this.game.add.audio('endSong');
+    this.endMusic.play();
     var finalBackground = this.game.add.sprite(this.game.world.centerX,
                                     this.game.world.centerY,
                                     'finalBackground')
@@ -28,10 +31,12 @@ var finalScene = {
 
   actionOnClick: function(){
       this.game.state.start('preloader');
+      this.endMusic.stop();
   },
 
   returnToMenu: function(){
     this.game.state.start('menu');
+    this.endMusic.stop();
   }
 };
 

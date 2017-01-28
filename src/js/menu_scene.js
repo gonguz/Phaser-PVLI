@@ -1,6 +1,10 @@
 var MenuScene = {
+  menuMusic: {},
     create: function () {
         this.game.world.setBounds(0,0,800,600);
+
+        this.music = this.game.add.audio('menu');
+        this.music.play();
 
 
         var starsBackground = this.game.add.sprite(this.game.world.centerX,
@@ -22,6 +26,7 @@ var MenuScene = {
 
     actionOnClick: function(){
         this.game.state.start('preloader');
+        this.music.stop();
     }
 };
 
