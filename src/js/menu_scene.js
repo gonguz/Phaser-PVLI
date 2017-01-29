@@ -30,8 +30,7 @@ var MenuScene = {
         diceText.font = 'firacode';
         diceText.anchor.set(0.2);
 
-          numeroGenerado = this.aleatorioButton(1, 7);
-          console.log("ESTO: ", numeroGenerado);
+        numeroGenerado = this.aleatorioButton(1, 7);
     },
 
     actionOnClick: function(){

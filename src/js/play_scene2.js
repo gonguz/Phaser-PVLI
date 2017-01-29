@@ -132,7 +132,7 @@ var PlayScene = {
       //this.shootAudio.loop = true;
 
       //this.numBalas = 2;
-      this.textLvl2 = this.game.add.text(300, 3100, "You can jump pressing S, "+ "\n"+ " rest of keys have to be guessed :XD")
+      this.textLvl2 = this.game.add.text(300, 3100, "You can jump pressing S, "+ "\n"+ " rest of keys have to be guessed :XD");
 
       this._rush.animations.add('run', [0,1,2,3], 7, true);
       this._rush.animations.add('idle', [8], 3, true);
@@ -141,7 +141,7 @@ var PlayScene = {
 
       this.groundLayer.resizeWorld(); //resize world and adjust to the screen
 
-      ammoText = this.game.add.text(100, 1000, 'Balas Restantes = 42', { fontSize: '16px', fill: '#FFFFFF' });
+      ammoText = this.game.add.text(100, 1000, 'AMMO = 42', { fontSize: '16px', fill: '#FFFFFF' });
   	  ammoText.fixedToCamera=true;
   	  ammoText.cameraOffset.setTo(10,10);
 
@@ -356,7 +356,7 @@ var PlayScene = {
 
     numShoots: function(){
       numBalas--;
-      ammoText.text = 'Balas Restantes = ' + numBalas;
+      ammoText.text = 'AMMO = ' + numBalas;
     },
 
     playerMovement: function(){

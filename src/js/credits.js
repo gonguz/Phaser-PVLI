@@ -1,6 +1,11 @@
 var credits = {
+  greetingsMusic: {},
   create: function(){
     this.game.world.setBounds(0,0,800,600);
+
+    this.greetingsMusic = this.game.add.audio('greetingsMusic');
+    this.greetingsMusic.play();
+
     var creditsBackground = this.game.add.sprite(this.game.world.centerX,
                                     this.game.world.centerY,
                                     'credits');
@@ -15,7 +20,7 @@ var credits = {
 
   actionOnClick: function(){
       this.game.state.start('menu');
-      this.endMusic.stop();
+      this.greetingsMusic.stop();
   }
 };
 

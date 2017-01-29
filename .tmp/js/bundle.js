@@ -1,7 +1,12 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var credits = {
+  greetingsMusic: {},
   create: function(){
     this.game.world.setBounds(0,0,800,600);
+
+    this.greetingsMusic = this.game.add.audio('greetingsMusic');
+    this.greetingsMusic.play();
+
     var creditsBackground = this.game.add.sprite(this.game.world.centerX,
                                     this.game.world.centerY,
                                     'credits');
@@ -16,7 +21,7 @@ var credits = {
 
   actionOnClick: function(){
       this.game.state.start('menu');
-      this.endMusic.stop();
+      this.greetingsMusic.stop();
   }
 };
 
@@ -148,7 +153,8 @@ var BootScene = {
     this.game.load.audio('gameOver', 'sounds/gameOver.mp3');
     this.game.load.audio('endSong', 'sounds/endSong.mp3');
     this.game.load.audio('noSceneSound', 'sounds/noSceneSound.mp3');
-    this.game.load.spritesheet('skull', 'images/skullAnimation.png', 41, 60, 5);
+    this.game.load.audio('greetingsMusic', 'sounds/greetingsMusic.mp3');
+    this.game.load.spritesheet('skull', 'images/skullAnimation.png', 99, 152, 5);
     this.game.load.image('trigger', 'images/trigger.png')
     this.game.load.image('tiles', 'images/Sprites2.png');
     this.game.load.image('tiles1', 'images/52088.png');
@@ -288,8 +294,7 @@ var MenuScene = {
         diceText.font = 'firacode';
         diceText.anchor.set(0.2);
 
-          numeroGenerado = this.aleatorioButton(1, 7);
-          console.log("ESTO: ", numeroGenerado);
+        numeroGenerado = this.aleatorioButton(1, 7);
     },
 
     actionOnClick: function(){
@@ -332,17 +337,19 @@ var noModeScene = {
   noModeSound: {},
   create: function(){
     this.game.world.setBounds(0,0,800,600);
+    this.game.stage.backgroundColor = "#000000";
 
     this.noSceneSound = this.game.add.audio('noSceneSound');
     this.noSceneSound.play();
 
-    var skull = this.game.add.sprite(300, 3100, 'skullAnimation');
+    var skull = this.game.add.sprite(this.game.world.centerX - 50,
+                                  this.game.world.centerY - 80, 'skull');
 
-    skull.animations.add('loop', [0,1,2,3,4], 7, true);
+    skull.animations.add('loop', [0,1,2,3,4], 20, true);
     skull.animations.play('loop');
 
-    var noModeImage = this.game.add.sprite(this.game.world.centerX,
-                                  this.game.world.centerY,
+    var noModeImage = this.game.add.sprite(this.game.world.centerX - 20,
+                                   this.game.world.centerY - 200,
                                   'noMode');
 
     noModeImage.anchor.setTo(0.5, 0.5);
@@ -449,10 +456,14 @@ var PlayScene = {
     _playerState: PlayerState.STOP, //estado del player
     _direction: Direction.NONE,  //dirección inicial del player. NONE es ninguna dirección.
 
+  init: function(){
+    this.inGameAudio = this.game.add.audio('inGame');
+    this.inGameAudio.play();
+  },
+
 
   create: function () {
 
-      this.game.backgroundColor = "#FFFFFF";
 
       this.map = this.game.add.tilemap('tilemap');
       this.map.addTilesetImage('patrones', 'tiles');
@@ -478,7 +489,7 @@ var PlayScene = {
       this.death.setScale(3,3);
       this.teleport.setScale(3,3);
 
-      this.inGameAudio = this.game.add.audio('inGame');
+
       this.inGameAudio.volume = 0.5;
       this.shootAudio = this.game.add.audio('shoot');
       this.shootAudio.volume = 0.3;
@@ -487,7 +498,6 @@ var PlayScene = {
       this.gameOverAudio = this.game.add.audio('gameOver');
       //this.endSong = this.game.add.audio('endSong');
 
-      this.inGameAudio.play();
       //this.stopMusic(this.endSong);
       //this.stopMusic(this.menuAudio);
       //this.stopMusic(this.endSong);
@@ -503,7 +513,9 @@ var PlayScene = {
 
       this.groundLayer.resizeWorld(); //resize world and adjust to the screen
 
-      ammoText = this.game.add.text(100, 1000, 'Balas Restantes = 39', { fontSize: '16px', fill: '#FFFFFF' });
+      this.textLvl1 = this.game.add.text(300, 3100, "I CAN MOVE WITH W-A-D, "+ "\n"+ " AND SHOOT WITH L!!");
+
+      ammoText = this.game.add.text(100, 1000, 'AMMO = 39', { fontSize: '16px', fill: '#FFFFFF' });
   	  ammoText.fixedToCamera=true;
   	  ammoText.cameraOffset.setTo(10,10);
 
@@ -718,7 +730,7 @@ var PlayScene = {
 
     numShoots: function(){
       numBalas--;
-      ammoText.text = 'Balas Restantes = ' + numBalas;
+      ammoText.text = 'AMMO = ' + numBalas;
     },
 
     playerMovement: function(){
@@ -1097,7 +1109,7 @@ var PlayScene = {
       //this.shootAudio.loop = true;
 
       //this.numBalas = 2;
-      this.textLvl2 = this.game.add.text(300, 3100, "You can jump pressing S, "+ "\n"+ " rest of keys have to be guessed :XD")
+      this.textLvl2 = this.game.add.text(300, 3100, "You can jump pressing S, "+ "\n"+ " rest of keys have to be guessed :XD");
 
       this._rush.animations.add('run', [0,1,2,3], 7, true);
       this._rush.animations.add('idle', [8], 3, true);
@@ -1106,7 +1118,7 @@ var PlayScene = {
 
       this.groundLayer.resizeWorld(); //resize world and adjust to the screen
 
-      ammoText = this.game.add.text(100, 1000, 'Balas Restantes = 42', { fontSize: '16px', fill: '#FFFFFF' });
+      ammoText = this.game.add.text(100, 1000, 'AMMO = 42', { fontSize: '16px', fill: '#FFFFFF' });
   	  ammoText.fixedToCamera=true;
   	  ammoText.cameraOffset.setTo(10,10);
 
@@ -1321,7 +1333,7 @@ var PlayScene = {
 
     numShoots: function(){
       numBalas--;
-      ammoText.text = 'Balas Restantes = ' + numBalas;
+      ammoText.text = 'AMMO = ' + numBalas;
     },
 
     playerMovement: function(){

@@ -86,10 +86,14 @@ var PlayScene = {
     _playerState: PlayerState.STOP, //estado del player
     _direction: Direction.NONE,  //dirección inicial del player. NONE es ninguna dirección.
 
+  init: function(){
+    this.inGameAudio = this.game.add.audio('inGame');
+    this.inGameAudio.play();
+  },
+
 
   create: function () {
 
-      this.game.backgroundColor = "#FFFFFF";
 
       this.map = this.game.add.tilemap('tilemap');
       this.map.addTilesetImage('patrones', 'tiles');
@@ -115,7 +119,7 @@ var PlayScene = {
       this.death.setScale(3,3);
       this.teleport.setScale(3,3);
 
-      this.inGameAudio = this.game.add.audio('inGame');
+
       this.inGameAudio.volume = 0.5;
       this.shootAudio = this.game.add.audio('shoot');
       this.shootAudio.volume = 0.3;
@@ -124,7 +128,6 @@ var PlayScene = {
       this.gameOverAudio = this.game.add.audio('gameOver');
       //this.endSong = this.game.add.audio('endSong');
 
-      this.inGameAudio.play();
       //this.stopMusic(this.endSong);
       //this.stopMusic(this.menuAudio);
       //this.stopMusic(this.endSong);
@@ -140,7 +143,9 @@ var PlayScene = {
 
       this.groundLayer.resizeWorld(); //resize world and adjust to the screen
 
-      ammoText = this.game.add.text(100, 1000, 'Balas Restantes = 39', { fontSize: '16px', fill: '#FFFFFF' });
+      this.textLvl1 = this.game.add.text(300, 3100, "I CAN MOVE WITH W-A-D, "+ "\n"+ " AND SHOOT WITH L!!");
+
+      ammoText = this.game.add.text(100, 1000, 'AMMO = 39', { fontSize: '16px', fill: '#FFFFFF' });
   	  ammoText.fixedToCamera=true;
   	  ammoText.cameraOffset.setTo(10,10);
 
@@ -355,7 +360,7 @@ var PlayScene = {
 
     numShoots: function(){
       numBalas--;
-      ammoText.text = 'Balas Restantes = ' + numBalas;
+      ammoText.text = 'AMMO = ' + numBalas;
     },
 
     playerMovement: function(){

@@ -46,7 +46,8 @@ var BootScene = {
     this.game.load.audio('gameOver', 'sounds/gameOver.mp3');
     this.game.load.audio('endSong', 'sounds/endSong.mp3');
     this.game.load.audio('noSceneSound', 'sounds/noSceneSound.mp3');
-    this.game.load.spritesheet('skull', 'images/skullAnimation.png', 41, 60, 5);
+    this.game.load.audio('greetingsMusic', 'sounds/greetingsMusic.mp3');
+    this.game.load.spritesheet('skull', 'images/skullAnimation.png', 99, 152, 5);
     this.game.load.image('trigger', 'images/trigger.png')
     this.game.load.image('tiles', 'images/Sprites2.png');
     this.game.load.image('tiles1', 'images/52088.png');

@@ -4,17 +4,19 @@ var noModeScene = {
   noModeSound: {},
   create: function(){
     this.game.world.setBounds(0,0,800,600);
+    this.game.stage.backgroundColor = "#000000";
 
     this.noSceneSound = this.game.add.audio('noSceneSound');
     this.noSceneSound.play();
 
-    var skull = this.game.add.sprite(300, 3100, 'skullAnimation');
+    var skull = this.game.add.sprite(this.game.world.centerX - 50,
+                                  this.game.world.centerY - 80, 'skull');
 
-    skull.animations.add('loop', [0,1,2,3,4], 7, true);
+    skull.animations.add('loop', [0,1,2,3,4], 20, true);
     skull.animations.play('loop');
 
-    var noModeImage = this.game.add.sprite(this.game.world.centerX,
-                                  this.game.world.centerY,
+    var noModeImage = this.game.add.sprite(this.game.world.centerX - 20,
+                                   this.game.world.centerY - 200,
                                   'noMode');
 
     noModeImage.anchor.setTo(0.5, 0.5);
