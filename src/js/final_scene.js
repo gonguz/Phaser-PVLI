@@ -3,6 +3,7 @@ var finalScene = {
   create: function(){
     this.game.world.setBounds(0,0,800,600);
 
+
     this.endMusic = this.game.add.audio('endSong');
     this.endMusic.play();
     var finalBackground = this.game.add.sprite(this.game.world.centerX,
@@ -16,12 +17,12 @@ var finalScene = {
 
     finalText.anchor.setTo(0.5,0.5);
 
-    var buttonReply = this.game.add.button(this.game.world.centerX / 2,
+    var botonGreetings = this.game.add.button(this.game.world.centerX / 2,
                                            this.game.world.centerY * 1.5,
-                                           'botonRestart',
+                                           'botonGreetings',
                                            this.actionOnClick,
                                            this, 2, 1, 0);
-    buttonReply.anchor.set(0.5);
+    botonGreetings.anchor.set(0.5);
 
     var buttonMenu = this.game.add.button(this.game.world.centerX*1.5,
     this.game.world.centerY * 1.5, 'botonMenu', this.returnToMenu, this, 2, 1, 0);
@@ -30,7 +31,7 @@ var finalScene = {
   },
 
   actionOnClick: function(){
-      this.game.state.start('preloader');
+      this.game.state.start('credits');
       this.endMusic.stop();
   },
 

@@ -8,17 +8,8 @@ var GameOver = {
         var gameOverImage = this.game.add.sprite(this.game.world.centerX, this.game.world.centerY/3,
         'gameOverImage');
         gameOverImage.anchor.set(0.5);
-
-        var botonRestart = this.game.add.button(this.game.world.centerX,
-                                               this.game.world.centerY,
-                                               'botonRestart',
-                                               this.actionOnClick,
-                                               this, 2, 1, 0);
-
-        botonRestart.anchor.set(0.5);
-
         var botonMenu = this.game.add.button(this.game.world.centerX,
-                                               this.game.world.centerY * 1.3,
+                                               this.game.world.centerY,
                                                'botonMenu',
                                                this.returnToMenu,
                                                this, 2, 1, 0);
@@ -28,11 +19,6 @@ var GameOver = {
     },
 
     //TODO 7 declarar el callback del boton.
-
-	actionOnClick: function(){
-		this.game.state.start('play');
-    this.gameOverAudio.stop();
-	},
     returnToMenu: function(){
       this.game.state.start('menu');
       this.gameOverAudio.stop();

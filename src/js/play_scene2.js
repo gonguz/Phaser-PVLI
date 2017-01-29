@@ -55,7 +55,7 @@ function Enemy(sprite, posX, posY, game){
   var paused = false;
   var fireRate = 150;
   var nextFire = 0;
-  var numBalas = 39;
+  var numBalas = 42;
   var numEnemies = 8;
   //var numBalas = 32;
 //Scena de juego.
@@ -132,6 +132,7 @@ var PlayScene = {
       //this.shootAudio.loop = true;
 
       //this.numBalas = 2;
+      this.textLvl2 = this.game.add.text(300, 3100, "You can jump pressing S, "+ "\n"+ " rest of keys have to be guessed :XD")
 
       this._rush.animations.add('run', [0,1,2,3], 7, true);
       this._rush.animations.add('idle', [8], 3, true);
@@ -140,7 +141,7 @@ var PlayScene = {
 
       this.groundLayer.resizeWorld(); //resize world and adjust to the screen
 
-      ammoText = this.game.add.text(100, 1000, 'Balas Restantes = 39', { fontSize: '16px', fill: '#FFFFFF' });
+      ammoText = this.game.add.text(100, 1000, 'Balas Restantes = 42', { fontSize: '16px', fill: '#FFFFFF' });
   	  ammoText.fixedToCamera=true;
   	  ammoText.cameraOffset.setTo(10,10);
 
@@ -155,7 +156,7 @@ var PlayScene = {
 
 
 
-      this.shoot = this.game.input.keyboard.addKey(Phaser.Keyboard.L);
+      this.shoot = this.game.input.keyboard.addKey(Phaser.Keyboard.W);
 
 
       this.bullets = this.game.add.group();
@@ -184,7 +185,7 @@ var PlayScene = {
       this.enemies.physicsBodyType = Phaser.Physics.ARCADE;
       this.enemies.enableBody = true;
 
-      this.enemy1 = this.createBaseEnemy(850, 3180, 600, 900, 150, 0);
+      this.enemy1 = this.createBaseEnemy(900, 3180, 600, 900, 50, 0);
       this.enemy2 = this.createBaseEnemy(2500, 3450, 2300, 2650, 250, 2);
       this.enemy3 = this.createBaseEnemy(4900, 3250, 4600, 5000, 250, 1);
       this.enemy4 = this.createBaseEnemy(3720, 2600, 3550, 3800, 150, 3);
@@ -259,7 +260,7 @@ var PlayScene = {
 
         if(numBalas === 0 && numEnemies !== 0){
           this.game.state.start('gameOver');
-          numBalas = 39;
+          numBalas = 42;
           numEnemies = 8;
           this.stopMusic(this.inGameAudio);
           //this.playMusic(this.gameOverAudio);
@@ -269,7 +270,7 @@ var PlayScene = {
 
         if(enemyCollision){
           this.game.state.start('gameOver');
-          numBalas = 39;
+          numBalas = 42;
           numEnemies = 8;
           this.stopMusic(this.inGameAudio);
           //this.playMusic(this.gameOverAudio);
@@ -286,7 +287,7 @@ var PlayScene = {
 
         if(this.game.physics.arcade.collide(this._rush, this.t4)){
           this.game.state.start('finalScene');
-          numBalas = 39;
+          numBalas = 42;
           numEnemies = 8;
           this.stopMusic(this.inGameAudio);
           //this.playMusic(this.endSong);
@@ -359,7 +360,7 @@ var PlayScene = {
     },
 
     playerMovement: function(){
-      if (this.game.input.keyboard.isDown(Phaser.Keyboard.A))
+      if (this.game.input.keyboard.isDown(Phaser.Keyboard.D))
       {
         this._rush.body.velocity.x = -400;
         tiempoStop = 0
@@ -369,7 +370,7 @@ var PlayScene = {
             this._rush.animations.play('run');
       }
 
-      else if (this.game.input.keyboard.isDown(Phaser.Keyboard.D))
+      else if (this.game.input.keyboard.isDown(Phaser.Keyboard.A))
       {
         this._rush.body.velocity.x = 400;
         tiempoStop = 0;
@@ -380,7 +381,7 @@ var PlayScene = {
       }
 
 
-      if( this.game.input.keyboard.isDown(Phaser.Keyboard.W) && this._rush.body.onFloor() ) {
+      if( this.game.input.keyboard.isDown(Phaser.Keyboard.S) && this._rush.body.onFloor() ) {
         this._rush.body.velocity.y = -750;
         this._rush.animations.play('jump');
 
@@ -448,7 +449,7 @@ var PlayScene = {
           tiempoStop++;
           if(tiempoStop === 120){
             this.game.state.start('gameOver');
-            numBalas = 39;
+            numBalas = 42;
             numEnemies = 8;
             this.stopMusic(this.inGameAudio);
             //this.playMusic(this.gameOverAudio);
@@ -476,7 +477,7 @@ var PlayScene = {
 
     returnToMenu: function(){
       this.game.state.start('menu');
-      numBalas = 39;
+      numBalas = 42;
       numEnemies = 8;
       this.game.world.setBounds(this._rush);
       this.pauseBackground.visible = false;
@@ -497,7 +498,7 @@ var PlayScene = {
     onPlayerFell: function(){
         //TODO 6 Carga de 'gameOver';
         this.game.state.start('gameOver');
-        numBalas = 39;
+        numBalas = 42;
         numEnemies = 8;
         this.stopMusic(this.inGameAudio);
         //this.playMusic(this.gameOverAudio);
@@ -542,9 +543,9 @@ var PlayScene = {
     },*/
 
     GetMovement: function(){
-        if(this.game.input.keyboard.isDown(Phaser.Keyboard.D)){
+        if(this.game.input.keyboard.isDown(Phaser.Keyboard.A)){
           return Direction.RIGHT;
-        }else if(this.game.input.keyboard.isDown(Phaser.Keyboard.A)){
+        }else if(this.game.input.keyboard.isDown(Phaser.Keyboard.D)){
           return Direction.LEFT;
         }else{
           return Direction.NONE;
