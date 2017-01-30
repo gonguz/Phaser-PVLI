@@ -9,6 +9,10 @@ var menuScene = require('./menu_scene.js');
 var finalScene = require('./final_scene.js');
 var noModeScene = require('./noMode_scene.js');
 var credits = require('./credits.js');
+var firstScene = require('./first_scene.js');
+var secondScene = require('./second_scene.js');
+var thirdScene = require('./third_scene.js');
+var alternativeMenu = require('./alternativeMenu.js');
 
 //  The Google WebFont Loader will look for this object, so create it before loading the script.
 
@@ -26,11 +30,17 @@ var BootScene = {
     this.game.load.image('logo', 'images/phaser.png');
     this.game.load.image('title', 'images/title.png');
     this.game.load.image('starsBackground', 'images/starsBackground.png');
+    this.game.load.image('firstSceneBackground', 'images/firstSceneBackground.png');
+    this.game.load.image('secondSceneBackground', 'images/secondSceneBackground.png');
+    this.game.load.image('terceraEscenaBackground', 'images/terceraEscenaBackground.png');
+    this.game.load.image('alternativeMenu', 'images/alternativeMenu.png');
     this.game.load.image('gameOverImage', 'images/gameOverImage.png');
     this.game.load.image('botonRestart', 'images/botonRestart.png');
     this.game.load.image('botonMenu', 'images/botonMenu.png');
     this.game.load.image('botonContinuar', 'images/botonContinuar.png');
     this.game.load.image('botonGreetings', 'images/botonGreetings.png');
+    this.game.load.image('continueButton', 'images/continueButton.png');
+    this.game.load.image('noButton', 'images/noButton.png');
     this.game.load.image('pauseBackground', 'images/pauseBackground.jpg');
     this.game.load.image('pauseText', 'images/pauseText.png');
     this.game.load.image('pauseIcon', 'images/pauseIcon.png');
@@ -60,11 +70,13 @@ var BootScene = {
     /*this.game.load.atlasJSONHash('rush_idle01', 'images/rush_spritesheet.png',
     'images/rush_spritesheet.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);*/
     this.game.load.spritesheet('rush_idle01', 'images/rush_spritesheet.png', 41, 66, 9);
+    this.game.load.spritesheet('enemy01', 'images/rush_spritesheet.png', 41, 66, 9);
+
   },
 
   create: function () {
       //this.game.state.start('preloader');
-      this.game.state.start('menu');
+      this.game.state.start('firstScene');
   }
 
 
@@ -94,6 +106,7 @@ var PreloaderScene = {
       /*this.game.load.atlasJSONHash('rush_idle01', 'images/rush_spritesheet.png',
       'images/rush_spritesheet.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);*/
       this.game.load.spritesheet('rush_idle01', 'images/rush_spritesheet.png', 41, 66, 9);
+      this.game.load.spritesheet('enemy01', 'images/rush_spritesheet.png', 41, 66, 9);
 
     this.load.onLoadComplete.add(this.loadComplete, this);
 
@@ -143,6 +156,10 @@ function init(){
   game.state.add('finalScene', finalScene);
   game.state.add('noModeScene', noModeScene);
   game.state.add('credits', credits);
+  game.state.add('firstScene', firstScene);
+  game.state.add('secondScene', secondScene);
+  game.state.add('thirdScene', thirdScene);
+  game.state.add('alternativeMenu', alternativeMenu);
 
   //TODO 1.3 iniciar el state 'boot'.
 

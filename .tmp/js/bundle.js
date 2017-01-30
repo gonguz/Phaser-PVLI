@@ -1,4 +1,71 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var numeroGenerado;
+var text;
+var alternativeMenu = {
+  menuMusic: {},
+    create: function () {
+        this.game.world.setBounds(0,0,800,600);
+
+        this.music = this.game.add.audio('menu');
+        this.music.play();
+
+        var alternativeMenu = this.game.add.image(this.game.world.centerX-350,
+                                        this.game.world.centerY,
+                                        'alternativeMenu');
+                                        alternativeMenu.anchor.setTo(0.1, 0.4);
+
+        var buttonStart = this.game.add.button(this.game.world.centerX,
+                                               this.game.world.centerY,
+                                               'boton',
+                                               this.actionOnClick,
+                                               this, 2, 1, 0);
+        buttonStart.anchor.set(0.5);
+        var otherModeButton = this.game.add.button(this.game.world.centerX - 75,
+                                               this.game.world.centerY + 150, 'otherModeButton', this.actionOnClick2, this, 2, 1, 0);
+
+        var randomButton = this.game.add.button(this.game.world.centerX + 220,
+                                               this.game.world.centerY + 50, 'randomMode', this.chosenModeButton, this, 2, 1, 0);
+        var diceText = this.game.add.text(randomButton.x - 40, randomButton.y - 40, "I'M A BUTTON TOO!", {fill: '#ff0000'});
+        diceText.font = 'firacode';
+        diceText.anchor.set(0.2);
+
+        numeroGenerado = this.aleatorioButton(1, 7);
+    },
+
+    actionOnClick: function(){
+        this.game.state.start('play');
+        this.music.stop();
+    },
+
+    actionOnClick2: function(){
+        this.game.state.start('play2');
+        this.music.stop();
+    },
+
+    aleatorioButton: function(inferior, superior){
+      var numPosibilidades = superior - inferior;
+   	  var aleat = Math.random() * numPosibilidades;
+   	  aleat = Math.round(aleat);
+   	  return parseInt(inferior) + aleat;
+    },
+
+    chosenModeButton: function(){
+      if(numeroGenerado >= 1 && numeroGenerado <= 2){
+        this.game.state.start('play');
+      }
+      else if(numeroGenerado > 2 && numeroGenerado <= 4){
+        this.game.state.start('play2');
+      }
+      else if(numeroGenerado > 4 && numeroGenerado <= 7){
+        this.game.state.start('noModeScene');
+      }
+      this.music.stop();
+    }
+};
+
+module.exports = alternativeMenu;
+
+},{}],2:[function(require,module,exports){
 var credits = {
   greetingsMusic: {},
   create: function(){
@@ -11,6 +78,7 @@ var credits = {
                                     this.game.world.centerY,
                                     'credits');
     creditsBackground.anchor.setTo(0.5, 0.5);
+    creditsBackground.scale.setTo(1,0.75);
 
     var menuButton = this.game.add.button(this.game.world.centerX - 70,
                                            this.game.world.centerY * 1.5,
@@ -27,7 +95,7 @@ var credits = {
 
 module.exports = credits;
 
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 var finalScene = {
   endMusic: {},
   create: function(){
@@ -73,7 +141,38 @@ var finalScene = {
 
 module.exports = finalScene;
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
+var firstScene = {
+  create: function(){
+  this.game.world.setBounds(0,0,800,600);
+
+  var firstSceneBackground = this.game.add.sprite(this.game.world.centerX-350,
+                                  this.game.world.centerY,
+                                  'firstSceneBackground');
+                                  firstSceneBackground.anchor.setTo(0.1, 0.4);
+
+  var continueButton = this.game.add.button(this.game.world.centerX - 150, this.game.world.centerY + 200,
+                                          'continueButton', this.actionContinueButton, this, 2, 1, 0);
+      continueButton.anchor.set(0.5);
+
+
+  var noButton = this.game.add.button(this.game.world.centerX + 150, this.game.world.centerY + 200,
+                                          'noButton', this.actionNoButton, this, 2, 1, 0);
+      noButton.anchor.set(0.5);
+  },
+
+  actionContinueButton: function(){
+    this.game.state.start('secondScene');
+  },
+  actionNoButton: function(){
+    this.game.state.start('alternativeMenu');
+  }
+
+};
+
+module.exports = firstScene;
+
+},{}],5:[function(require,module,exports){
 var GameOver = {
   gameOverAudio: {},
     create: function () {
@@ -104,7 +203,7 @@ var GameOver = {
 
 module.exports = GameOver;
 
-},{}],4:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 'use strict';
 
 //TODO 1.1 Require de las escenas, play_scene, gameover_scene y menu_scene.
@@ -116,6 +215,10 @@ var menuScene = require('./menu_scene.js');
 var finalScene = require('./final_scene.js');
 var noModeScene = require('./noMode_scene.js');
 var credits = require('./credits.js');
+var firstScene = require('./first_scene.js');
+var secondScene = require('./second_scene.js');
+var thirdScene = require('./third_scene.js');
+var alternativeMenu = require('./alternativeMenu.js');
 
 //  The Google WebFont Loader will look for this object, so create it before loading the script.
 
@@ -133,11 +236,17 @@ var BootScene = {
     this.game.load.image('logo', 'images/phaser.png');
     this.game.load.image('title', 'images/title.png');
     this.game.load.image('starsBackground', 'images/starsBackground.png');
+    this.game.load.image('firstSceneBackground', 'images/firstSceneBackground.png');
+    this.game.load.image('secondSceneBackground', 'images/secondSceneBackground.png');
+    this.game.load.image('terceraEscenaBackground', 'images/terceraEscenaBackground.png');
+    this.game.load.image('alternativeMenu', 'images/alternativeMenu.png');
     this.game.load.image('gameOverImage', 'images/gameOverImage.png');
     this.game.load.image('botonRestart', 'images/botonRestart.png');
     this.game.load.image('botonMenu', 'images/botonMenu.png');
     this.game.load.image('botonContinuar', 'images/botonContinuar.png');
     this.game.load.image('botonGreetings', 'images/botonGreetings.png');
+    this.game.load.image('continueButton', 'images/continueButton.png');
+    this.game.load.image('noButton', 'images/noButton.png');
     this.game.load.image('pauseBackground', 'images/pauseBackground.jpg');
     this.game.load.image('pauseText', 'images/pauseText.png');
     this.game.load.image('pauseIcon', 'images/pauseIcon.png');
@@ -167,11 +276,13 @@ var BootScene = {
     /*this.game.load.atlasJSONHash('rush_idle01', 'images/rush_spritesheet.png',
     'images/rush_spritesheet.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);*/
     this.game.load.spritesheet('rush_idle01', 'images/rush_spritesheet.png', 41, 66, 9);
+    this.game.load.spritesheet('enemy01', 'images/rush_spritesheet.png', 41, 66, 9);
+
   },
 
   create: function () {
       //this.game.state.start('preloader');
-      this.game.state.start('menu');
+      this.game.state.start('firstScene');
   }
 
 
@@ -201,6 +312,7 @@ var PreloaderScene = {
       /*this.game.load.atlasJSONHash('rush_idle01', 'images/rush_spritesheet.png',
       'images/rush_spritesheet.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);*/
       this.game.load.spritesheet('rush_idle01', 'images/rush_spritesheet.png', 41, 66, 9);
+      this.game.load.spritesheet('enemy01', 'images/rush_spritesheet.png', 41, 66, 9);
 
     this.load.onLoadComplete.add(this.loadComplete, this);
 
@@ -250,6 +362,10 @@ function init(){
   game.state.add('finalScene', finalScene);
   game.state.add('noModeScene', noModeScene);
   game.state.add('credits', credits);
+  game.state.add('firstScene', firstScene);
+  game.state.add('secondScene', secondScene);
+  game.state.add('thirdScene', thirdScene);
+  game.state.add('alternativeMenu', alternativeMenu);
 
   //TODO 1.3 iniciar el state 'boot'.
 
@@ -261,7 +377,7 @@ window.onload = function () {
   WebFont.load(wfconfig);
 };
 
-},{"./credits.js":1,"./final_scene.js":2,"./gameover_scene.js":3,"./menu_scene.js":5,"./noMode_scene.js":6,"./play_scene.js":7,"./play_scene2.js":8}],5:[function(require,module,exports){
+},{"./alternativeMenu.js":1,"./credits.js":2,"./final_scene.js":3,"./first_scene.js":4,"./gameover_scene.js":5,"./menu_scene.js":7,"./noMode_scene.js":8,"./play_scene.js":9,"./play_scene2.js":10,"./second_scene.js":11,"./third_scene.js":12}],7:[function(require,module,exports){
 var numeroGenerado;
 var text;
 var MenuScene = {
@@ -330,7 +446,7 @@ var MenuScene = {
 
 module.exports = MenuScene;
 
-},{}],6:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 
 var noModeScene = {
   skull: {},
@@ -367,7 +483,7 @@ var noModeScene = {
 };
 module.exports = noModeScene;
 
-},{}],7:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 'use strict';
 
 //Enumerados: PlayerState son los estado por los que pasa el player. Directions son las direcciones a las que se puede
@@ -974,7 +1090,7 @@ var PlayScene = {
 
 module.exports = PlayScene;
 
-},{}],8:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 'use strict';
 
 //Enumerados: PlayerState son los estado por los que pasa el player. Directions son las direcciones a las que se puede
@@ -1577,4 +1693,46 @@ var PlayScene = {
 
 module.exports = PlayScene;
 
-},{}]},{},[4]);
+},{}],11:[function(require,module,exports){
+var secondScene = {
+  create: function(){
+    this.game.world.setBounds(0,0,800,600);
+
+    var secondSceneBackground = this.game.add.sprite(this.game.world.centerX-350,
+                                    this.game.world.centerY,
+                                    'secondSceneBackground');
+                                    secondSceneBackground.anchor.setTo(0.1, 0.4);
+
+    var continueButton = this.game.add.button(this.game.world.centerX, this.game.world.centerY + 200,
+                                              'continueButton', this.continueButtonAction, this, 2, 1, 0);
+        continueButton.anchor.set(0.5);
+  },
+
+  continueButtonAction: function(){
+    this.game.state.start('thirdScene');
+  }
+};
+module.exports = secondScene;
+
+},{}],12:[function(require,module,exports){
+var thirdScene = {
+  create: function(){
+    this.game.world.setBounds(0,0,800,600);
+
+    var terceraEscenaBackground = this.game.add.sprite(this.game.world.centerX-350,
+                                    this.game.world.centerY,
+                                    'terceraEscenaBackground');
+                                    terceraEscenaBackground.anchor.setTo(0.1, 0.4);
+
+    var continueButton = this.game.add.button(this.game.world.centerX + 300, this.game.world.centerY + 280,
+        'continueButton', this.continueButtonAction, this, 2, 1, 0);
+        continueButton.anchor.set(0.5);
+  },
+
+  continueButtonAction: function(){
+    this.game.state.start('menu');
+  }
+};
+module.exports = thirdScene;
+
+},{}]},{},[6]);
